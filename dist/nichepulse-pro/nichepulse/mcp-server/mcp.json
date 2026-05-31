@@ -1,0 +1,37 @@
+{
+  "name": "NichePulse MCP Server",
+  "description": "AI-powered niche scoring API. Score, compare, and validate niches for POD, digital products, and e-commerce.",
+  "version": "1.0.0",
+  "transport": "stdio",
+  "tools": [
+    {
+      "name": "score_niche",
+      "description": "Score any niche on 5 dimensions: passion, buy frequency, gift potential, competition, trend",
+      "input": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "passion": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "buy_frequency": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "gift_potential": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "competition": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "trend": { "type": "integer", "minimum": 1, "maximum": 5 }
+        },
+        "required": ["name"]
+      }
+    },
+    {
+      "name": "list_niches",
+      "description": "List pre-scored niches from the database ranked by total score"
+    },
+    {
+      "name": "compare_niches",
+      "description": "Compare multiple niches side by side"
+    },
+    {
+      "name": "validate_niche",
+      "description": "Full validation: score + research prompts for any niche idea"
+    }
+  ],
+  "pricing": "Free tier: 50 score requests/month. Pro: $9/month unlimited."
+}

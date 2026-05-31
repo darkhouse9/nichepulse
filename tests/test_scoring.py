@@ -38,13 +38,13 @@ class TestScoreNiche:
 
 class TestGetNiche:
     def test_exact_match(self):
-        n = get_niche("mushroom foraging")
+        n = get_niche("pickleball")
         assert n is not None
-        assert "Mushroom" in n.name
+        assert "Pickleball" in n.name
         assert n.total >= 20
 
     def test_fuzzy_match(self):
-        n = get_niche("mushroom")
+        n = get_niche("adhd")
         assert n is not None
 
     def test_no_match(self):
@@ -67,7 +67,7 @@ class TestListNiches:
 
 class TestCompareNiches:
     def test_orders_by_score(self):
-        results = compare_niches(["mushroom", "birding", "vanlife"])
+        results = compare_niches(["adhd-neurodivergent", "pickleball", "blue-collar"])
         assert len(results) >= 2
         for i in range(len(results) - 1):
             assert results[i].total >= results[i + 1].total

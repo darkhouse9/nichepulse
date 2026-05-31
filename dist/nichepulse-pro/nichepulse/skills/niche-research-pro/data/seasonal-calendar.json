@@ -1,0 +1,15 @@
+{
+  "description": "Monthly niche seasonality data — when each niche peaks for promotions. Updated monthly.",
+  "niches": {
+    "mushroom-foraging": {"peaks": ["april", "may", "september", "october", "november"], "holidays": ["National Morel Mushroom Day (April 20)", "National Mushroom Month (September)"], "notes": "Fall foraging season is peak. Morel season drives spring sales."},
+    "birding": {"peaks": ["april", "may", "december"], "holidays": ["Christmas Bird Count (Dec-Jan)", "World Migratory Bird Day (May)", "Great Backyard Bird Count (February)"], "notes": "Spring migration + CBC drive sales. Year-round market."},
+    "native-plants": {"peaks": ["march", "april", "may"], "holidays": ["Earth Day (April 22)", "Arbor Day (April)", "Pollinator Week (June)"], "notes": "Spring gardening season = peak. Eco-awareness days boost sales."},
+    "women-outdoor": {"peaks": ["march", "june", "july"], "holidays": ["Women's History Month (March)", "International Mountain Day (Dec 11)", "SheEXPLODING events"], "notes": "Summer outdoor season + women's history month"},
+    "trail-running": {"peaks": ["april", "may", "september", "october"], "holidays": ["National Trails Day (June)", "Ultra Trail Month (varies)"], "notes": "Spring and fall trail seasons. Summer heat = decline."},
+    "hammock-camping": {"peaks": ["may", "june", "july", "august"], "holidays": ["National Hammock Day (July 22)", "National Camping Month (June)"], "notes": "Summer-only niche. Plan inventory accordingly."},
+    "vanlife": {"peaks": ["april", "may", "june", "july", "august", "september"], "holidays": ["Vanlife Awareness Month (May)", "National RV Day (June)"], "notes": "Summer road trip season. Year-round community but peak in summer."},
+    "adhd-neurodivergent": {"peaks": ["all"], "holidays": ["ADHD Awareness Month (October)", "Neurodiversity Celebration Week (March)"], "notes": "Year-round market. October = awareness spike."},
+    "herbalism": {"peaks": ["all"], "holidays": ["Herb Day (May)", "National Herbal Medicine Week (October)"], "notes": "Year-round with peaks around herb harvesting season."},
+    "beekeeping": {"peaks": ["april", "may", "june"], "holidays": ["National Honey Bee Day (August)", "World Bee Day (May 20)"], "notes": "Spring hive setup season. Honey harvest = August spike."}
+  }
+}
