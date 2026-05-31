@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "nichepulse": {
+      "command": "python3",
+      "args": ["-m", "nichepulse_mcp.server"]
+    }
+  }
+}
