@@ -1,0 +1,70 @@
+{
+  "$schema": "https://cursor.com/schema/mcp-server.json",
+  "name": "nichepulse",
+  "version": "1.0.0",
+  "description": "AI-powered niche scoring for creators, entrepreneurs, and POD sellers. Score any niche on 5 dimensions.",
+  "author": "NichePulse",
+  "repository": "https://github.com/darkhouse9/nichepulse",
+  "license": "MIT",
+  "icon": null,
+  "categories": ["analytics", "research", "business"],
+  "keywords": ["niche", "scoring", "research", "print-on-demand", "etsy", "ecommerce", "market-research", "AI"],
+  "installation": {
+    "stdio": {
+      "command": "python",
+      "args": ["-m", "nichepulse.server"],
+      "cwd": "."
+    }
+  },
+  "tools": [
+    {
+      "name": "score_niche",
+      "description": "Score any niche on 5 dimensions: passion, buy frequency, gift potential, competition, trend. Returns total score (out of 25), grade (S-D), verdict, and estimated profit margin.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "description": "Niche name or keyword" },
+          "passion": { "type": "integer", "minimum": 1, "maximum": 5, "description": "Identity attachment level" },
+          "buy_frequency": { "type": "integer", "minimum": 1, "maximum": 5, "description": "How often audience buys" },
+          "gift_potential": { "type": "integer", "minimum": 1, "maximum": 5, "description": "Gift-buying likelihood" },
+          "competition": { "type": "integer", "minimum": 1, "maximum": 5, "description": "1=saturated, 5=untapped" },
+          "trend": { "type": "integer", "minimum": 1, "maximum": 5, "description": "1=declining, 5=exploding" }
+        },
+        "required": ["name"]
+      }
+    },
+    {
+      "name": "list_niches",
+      "description": "List pre-scored niches ranked by score. Includes Mushroom Foraging, Birding, Native Plants, Trail Running, and 10 more.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "top": { "type": "integer", "default": 10 },
+          "min_score": { "type": "integer", "default": 0 }
+        }
+      }
+    },
+    {
+      "name": "compare_niches",
+      "description": "Compare multiple niches side by side with detailed breakdowns.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "keywords": { "type": "array", "items": { "type": "string" } }
+        },
+        "required": ["keywords"]
+      }
+    },
+    {
+      "name": "validate_niche",
+      "description": "Full validation workflow: score a niche + generate research prompts for Etsy, Google Trends, and Reddit validation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" }
+        },
+        "required": ["name"]
+      }
+    }
+  ]
+}
