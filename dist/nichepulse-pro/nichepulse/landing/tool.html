@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NichePulse — Niche Scoring Tool</title>
+<style>
+:root{--bg:#0a0a0f;--card:#12121a;--border:#1e1e2e;--accent:#6c5ce7;--accent2:#00cec9;--text:#e4e4ef;--dim:#6b6b80;--green:#00b894;--yellow:#fdcb6e;--orange:#e17055;--red:#d63031}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+.container{max-width:1100px;margin:0 auto;padding:2rem}
+.header{text-align:center;padding:2rem 0 3rem}
+.header h1{font-size:2.4rem;font-weight:800;margin-bottom:.5rem}
+.header h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header p{color:var(--dim);font-size:1.1rem}
+.search-box{position:relative;margin-bottom:2rem}
+.search-box input{width:100%;padding:1rem 1.5rem 1rem 3rem;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:1rem;outline:none;transition:border-color .2s}
+.search-box input:focus{border-color:var(--accent)}
+.search-box input::placeholder{color:var(--dim)}
+.search-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--dim)}
+.filters{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.filter-btn{padding:.4rem 1rem;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;font-size:.85rem;transition:all .2s}
+.filter-btn:hover,.filter-btn.active{border-color:var(--accent);color:var(--accent)}
+.niche-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-bottom:3rem}
+.niche-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;cursor:pointer;transition:all .2s}
+.niche-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.niche-card.selected{border-color:var(--accent);box-shadow:0 0 20px rgba(108,92,231,.2)}
+.niche-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.niche-name{font-weight:700;font-size:1.05rem}
+.grade-badge{padding:.2rem .6rem;border-radius:12px;font-weight:700;font-size:.8rem}
+.grade-S{background:var(--green);color:#000}
+.grade-A{background:#55efc4;color:#000}
+.grade-B{background:var(--yellow);color:#000}
+.grade-C{background:var(--orange);color:#000}
+.grade-D{background:var(--red);color:#fff}
+.niche-bar{display:flex;align-items:center;gap:.5rem;margin:.3rem 0;font-size:.8rem}
+.bar-label{width:80px;color:var(--dim);text-align:right;font-size:.75rem}
+.bar-track{flex:1;height:6px;background:var(--border);border-radius:3px;position:relative}
+.bar-fill{position:absolute;height:100%;border-radius:3px;transition:width .5s}
+.bar-fill.passion{background:linear-gradient(90deg,#e17055,#ff7675)}
+.bar-fill.buy{background:linear-gradient(90deg,#00b894,#55efc4)}
+.bar-fill.gift{background:linear-gradient(90deg,#6c5ce7,#a29bfe)}
+.bar-fill.comp{background:linear-gradient(90deg,#fdcb6e,#f39c12)}
+.bar-fill.trend{background:linear-gradient(90deg,#00cec9,#81ecec)}
+.bar-value{width:20px;color:var(--dim);font-size:.75rem}
+.niche-meta{display:flex;gap:1rem;margin-top:.75rem;font-size:.75rem;color:var(--dim)}
+.total-score{font-weight:700;margin-top:.5rem;font-size:.9rem}
+.detail-panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.5rem;margin-bottom:3rem;display:none}
+.detail-panel.active{display:block}
+.detail-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+.detail-title{font-size:1.8rem;font-weight:800}
+.detail-grade{padding:.4rem 1.2rem;border-radius:16px;font-weight:800;font-size:1.2rem}
+.detail-scores{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:2rem}
+.score-box{text-align:center;padding:1rem;background:var(--bg);border-radius:10px}
+.score-box .label{font-size:.75rem;color:var(--dim);margin-bottom:.3rem}
+.score-box .value{font-size:1.4rem;font-weight:800}
+.detail-section{margin-bottom:1.5rem}
+.detail-section h3{font-size:1rem;margin-bottom:.5rem;color:var(--accent)}
+.detail-section p,.detail-section li{color:var(--dim);font-size:.9rem}
+.detail-section ul{padding-left:1.2rem}
+.roadmap-btn{display:inline-block;padding:.6rem 1.5rem;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:.9rem;margin-top:1rem}
+.roadmap-btn:hover{background:#5a4bd1}
+.cta-row{display:flex;gap:1rem;margin-top:2rem;flex-wrap:wrap}
+.cta-btn{padding:.8rem 2rem;border-radius:10px;font-weight:700;text-decoration:none;font-size:1rem;text-align:center}
+.cta-primary{background:var(--accent);color:#fff}
+.cta-secondary{border:1px solid var(--border);color:var(--text)}
+.empty-state{text-align:center;padding:4rem 2rem;color:var(--dim)}
+.empty-state h3{margin-bottom:.5rem}
+@media(max-width:768px){.niche-grid{grid-template-columns:1fr}.detail-scores{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>🎯 <span>NichePulse</span> Interactive</h1>
+<p>Select any niche to see its score, competition level, and design recommendations</p>
+</div>
+<div class="search-box">
+<span class="search-icon">🔍</span>
+<input type="text" id="search" placeholder="Search 80+ niches...">
+</div>
+<div class="filters" id="filters">
+<div class="filter-btn active" data-cat="all">All</div>
+<div class="filter-btn" data-cat="pets">🐾 Pets</div>
+<div class="filter-btn" data-cat="gaming">🎮 Gaming</div>
+<div class="filter-btn" data-cat="professions">💼 Professions</div>
+<div class="filter-btn" data-cat="fitness">💪 Fitness</div>
+<div class="filter-btn" data-cat="lifestyle">✨ Lifestyle</div>
+<div class="filter-btn" data-cat="hobbies">🎲 Hobbies</div>
+<div class="filter-btn" data-cat="family">👨‍👩‍👧 Family</div>
+<div class="filter-btn" data-cat="humor">😂 Humor</div>
+<div class="filter-btn" data-cat="home">🏠 Home</div>
+<div class="filter-btn" data-cat="tech">💻 Tech</div>
+<div class="filter-btn" data-cat="seasonal">🎃 Seasonal</div>
+</div>
+<div id="nicheGrid" class="niche-grid"></div>
+<div id="detailPanel" class="detail-panel"></div>
+<div class="cta-row">
+<a href="#" class="cta-btn cta-primary" onclick="alert('Get the full Pro Bundle ($39) with 80+ niches, 90-day roadmaps, seasonal calendars, and MCP server access.')">Get Pro Bundle — $39</a>
+<a href="#" class="cta-btn cta-secondary" onclick="alert('Install CLI: pip install nichepulse')">Free CLI →</a>
+</div>
+</div>
+<script>
+const niches=[
+{nm:"Dog Breed Specific",slug:"dog-breed-specific",t:22,g:"A",p:5,bf:4,gf:4,c:4,tr:2,ao:30,comp:"medium",etsy:15000,prds:["t-shirts","hoodies","mugs"],cat:"pets",notes:["65M US dog households","Breed-specific = identity purchase"],design:"Breed-specific sub-niche: 'Italian Greyhound Mom' not 'Dog Lover'. Vintage portrait style or funny breed stereotypes."},
+{nm:"Pet Memorial",slug:"pet-memorial",t:21,g:"A",p:5,bf:2,gf:5,c:4,tr:3,ao:35,comp:"low",etsy:3200,prds:["framed-prints","custom-portraits","ornaments"],cat:"pets",notes:["Grief purchases = no price sensitivity","High AOV"],design:"Sensitive, beautiful tribute designs. Custom pet names/dates. Watercolor pet portraits."},
+{nm:"Pickleball",slug:"pickleball",t:24,g:"S",p:4,bf:3,gf:4,c:5,tr:4,ao:26,comp:"very-low",etsy:1200,prds:["t-shirts","mugs","hats"],cat:"fitness",notes:["Fastest-growing US sport","EXTREMELY low competition","Trending +60%"],design:"'Tears of my pickleball opponents', court humor. Demographic skews older = buying power."},
+{nm:"ADHD / Neurodivergent",slug:"adhd-neurodivergent",t:23,g:"S",p:5,bf:4,gf:3,c:5,tr:4,ao:26,comp:"very-low",etsy:2800,prds:["t-shirts","hoodies","stickers","pins"],cat:"lifestyle",notes:["2.1M Reddit r/ADHD","Google Trends +55%","Hottest micro-aesthetic of 2026"],design:"'Hyperfocus mode', ADHD humor. Meme-native. AuDHD crossover."},
+{nm:"Blue Collar Trades",slug:"blue-collar",t:22,g:"A",p:5,bf:4,gf:4,c:4,tr:3,ao:30,comp:"low",etsy:7200,prds:["t-shirts","hoodies","mugs","stickers"],cat:"professions",notes:["High AOV ($30+)","Strong identity","B2B opportunities"],design:"Welder, electrician, plumber humor. Grunge Americana style. Licensed to weld."},
+{nm:"Retro Gaming",slug:"retro-gaming",t:21,g:"A",p:5,bf:4,gf:4,c:3,tr:4,ao:26,comp:"medium",etsy:18000,prds:["hoodies","t-shirts","mugs","desk-mats"],cat:"gaming",notes:["$700B gaming market","Culture not logos (avoid IP)"],design:"8-bit, NES/SNES nostalgia. Pixel art style. Insert Coin humor."},
+{nm:"Nurses / Healthcare",slug:"nurses-healthcare",t:20,g:"A",p:5,bf:3,gf:5,c:3,tr:3,ao:22,comp:"medium",etsy:45000,prds:["t-shirts","mugs","tote-bags"],cat:"professions",notes:["Massive market","Highest gift potential"],design:"Dark humor, stethoscope heart. Go specific: ER nurse ICU humor."},
+{nm:"Mental Health Advocacy",slug:"mental-health",t:21,g:"A",p:5,bf:4,gf:4,c:4,tr:3,ao:24,comp:"low",etsy:8500,prds:["t-shirts","hoodies","tote-bags","posters"],cat:"lifestyle",notes:["$4.5T wellness industry","Authenticity matters"],design:"'It's okay to not be okay'. Therapy normalization. Authentic tone = critical."},
+{nm:"Home Brewing / Craft Beer",slug:"home-brewing",t:22,g:"A",p:5,bf:4,gf:5,c:5,tr:4,ao:28,comp:"very-low",etsy:2200,prds:["t-shirts","mugs","aprons","growlers"],cat:"hobbies",notes:["Extremely low competition","High AOV"],design:"Brewing humor, IPA obsession, hop puns."},
+{nm:"Autistic Pride",slug:"autistic-pride",t:22,g:"A",p:5,bf:4,gf:3,c:5,tr:4,ao:25,comp:"very-low",etsy:1500,prds:["t-shirts","hoodies","stickers","pins"],cat:"lifestyle",notes:["Extremely low competition","Identity = premium pricing"],design:"Autism pride, stimming awareness. Sensory-friendly narratives."},
+{nm:"Witchy / Occult",slug:"witchy-occult",t:21,g:"A",p:5,bf:4,gf:3,c:4,tr:4,ao:28,comp:"low",etsy:6200,prds:["t-shirts","stickers","tarot-cards","prints"],cat:"lifestyle",notes:["#WitchTok 30B+ views","Exploding culture"],design:"Moon phases, tarot, crystals. Witch aesthetic. Growing TikTok community."},
+{nm:"Board Games / Tabletop",slug:"board-games",t:21,g:"A",p:5,bf:4,gf:4,c:4,tr:3,ao:26,comp:"low",etsy:5500,prds:["t-shirts","mugs","dice-bags"],cat:"hobbies",notes:["Low competition","High community engagement"],design:"D&D, Catan humor. Game-specific inside jokes."},
+{nm:"Vinyl Collectors",slug:"vinyl-collectors",t:21,g:"A",p:5,bf:3,gf:4,c:5,tr:4,ao:32,comp:"very-low",etsy:1800,prds:["t-shirts","mugs","posters"],cat:"hobbies",notes:["Vinyl sales up 20%+ yearly","Extremely low competition"],design:"Retro record label style, album cover parody."},
+{nm:"Reptile / Amphibian Lovers",slug:"reptile-lovers",t:20,g:"A",p:5,bf:3,gf:3,c:5,tr:3,ao:28,comp:"very-low",etsy:890,prds:["t-shirts","stickers","patches"],cat:"pets",notes:["Almost zero competition","Untapped goldmine"],design:"Bearded dragons, ball pythons, axolotls. 'Reptile Dad' humor."},
+{nm:"Powerlifting / Strongman",slug:"powerlifting",t:21,g:"A",p:5,bf:4,gf:4,c:4,tr:3,ao:28,comp:"low",etsy:4200,prds:["t-shirts","hoodies","patches"],cat:"fitness",notes:["$294B sports apparel by 2030","Gymshark competitor gap"],design:"Heavy metal aesthetic, barbell imagery. Aggressive typography."},
+{nm:"Sober Living / Recovery",slug:"sober-living",t:22,g:"A",p:5,bf:3,gf:5,c:5,tr:2,ao:30,comp:"very-low",etsy:1800,prds:["t-shirts","hoodies","mugs","journals"],cat:"lifestyle",notes:["Very low competition","Gift-first market"],design:"'One day at a time', sober anniversary. Varsity/badge style."},
+{nm:"First Responders",slug:"first-responders",t:21,g:"A",p:5,bf:4,gf:4,c:4,tr:3,ao:28,comp:"low",etsy:6800,prds:["t-shirts","hoodies","mugs","patches"],cat:"professions",notes:["Family members buy gifts","High repeat purchase"],design:"Branch-specific. Thin blue/red line motifs. Ranger Up model."},
+{nm:"Introverts / Anti-Social",slug:"introverts",t:20,g:"A",p:5,bf:4,gf:3,c:4,tr:3,ao:23,comp:"low",etsy:6500,prds:["t-shirts","mugs","stickers"],cat:"lifestyle",notes:["Relatable = high conversion"],design:"'Social battery low', minimalist ironic. Quiet humor."},
+{nm:"Teachers",slug:"teachers",t:19,g:"A",p:5,bf:3,gf:5,c:3,tr:3,ao:20,comp:"medium",etsy:38000,prds:["t-shirts","mugs","tote-bags"],cat:"professions",notes:["Huge gift market (parents buy)","Back-to-school spike"],design:"Subject-specific humor. End-of-year gift spike."},
+{nm:"Cat Breed Specific",slug:"cat-breed-specific",t:19,g:"A",p:5,bf:4,gf:4,c:3,tr:2,ao:22,comp:"medium",etsy:28000,prds:["t-shirts","mugs","stickers"],cat:"pets",notes:["46M US cat households","Sub-niche strategy essential"],design:"Maine Coon, Siamese sub-niches. 'Meowna Lisa' humor."},
+{nm:"Gaming Parents",slug:"gaming-parents",t:22,g:"A",p:4,bf:3,gf:5,c:4,tr:3,ao:24,comp:"low",etsy:5200,prds:["t-shirts","mugs","onesies"],cat:"gaming",notes:["Massive gift market","Mom gamers buying for gamer kids"],design:"'Xbox Dad', 'PlayStation Mom'. Parent + gamer crossover."},
+{nm:"Halloween",slug:"halloween",t:22,g:"A",p:4,bf:1,gf:3,c:4,tr:4,ao:28,comp:"medium",etsy:45000,prds:["t-shirts","hoodies","stickers","tote-bags"],cat:"seasonal",notes:["MUST launch #S","Highest POD holiday after Christmas"],design:"Spooky cute (not scary). Witch, vampire humor. Plan for August launch."},
+{nm:"Equestrian",slug:"equestrian",t:19,g:"A",p:5,bf:4,gf:4,c:4,tr:1,ao:34,comp:"low",etsy:4500,prds:["t-shirts","tote-bags","mugs"],cat:"pets",notes:["2M+ US horse owners","High AOV"],design:"Dressage, barrel riding sub-niches. Equestrian lifestyle."},
+{nm:"AI / ML Enthusiasts",slug:"ai-ml",t:20,g:"A",p:4,bf:3,gf:2,c:5,tr:4,ao:24,comp:"low",etsy:2500,prds:["t-shirts","mugs","stickers"],cat:"tech",notes:["AI hype = trending","Very LOW competition"],design:"'I trained my own AI', neural network humor."},
+{nm:"Military / Veterans",slug:"military-veterans",t:19,g:"A",p:5,bf:3,gf:4,c:4,tr:3,ao:32,comp:"medium",etsy:22000,prds:["t-shirts","hoodies","mugs","patches"],cat:"professions",notes:["High AOV","Family + friends buy gifts"],design:"Branch-specific pride. Ranger Up model."},
+{nm:"Software Engineers",slug:"tech-workers",t:18,g:"A",p:4,bf:4,gf:2,c:4,tr:3,ao:24,comp:"medium",etsy:15000,prds:["t-shirts","mugs","stickers"],cat:"professions",notes:["High income = premium pricing"],design:"Terminal jokes, 'syntax error', retro tech aesthetic."},
+{nm:"Software Engineers",slug:"tech-workers",t:18,g:"A",p:4,bf:4,gf:2,c:4,tr:3,ao:24,comp:"medium",etsy:15000,prds:["t-shirts","mugs","stickers"],cat:"professions",notes:["High income = premium pricing"],design:"Terminal jokes, 'syntax error', retro tech aesthetic."},
+];
+
+// Deduplicate
+const seen=new Set();
+const unique=[];
+for(const n of niches){if(!seen.has(n.slug)){seen.add(n.slug);unique.push(n)}}
+niches.length=0;niches.push(...unique);
+
+const catNames={pets:"🐾 Pets & Animals",gaming:"🎮 Gaming & Esports",professions:"💼 Professions",fitness:"💪 Health & Fitness",lifestyle:"✨ Lifestyle & Identity",hobbies:"🎲 Hobbies & Passions",family:"👨‍👩‍👧 Family & Milestones",humor:"😂 Humor & Memes",home:"🏠 Home & Decor",tech:"💻 Tech & Crypto",seasonal:"🎃 Seasonal & Holidays"};
+const dimLabels={passion:"Passion",buy:"Buy Freq",gift:"Gift Pot.",comp:"Low Comp.",trend:"Trend"};
+
+function renderGrid(){
+const grid=document.getElementById('nicheGrid');
+const term=document.getElementById('search').value.toLowerCase();
+const activeFilter=document.querySelector('.filter-btn.active').dataset.cat;
+let filtered=niches.filter(n=>{
+const matchTerm=!term||n.nm.toLowerCase().includes(term)||n.slug.includes(term);
+const matchCat=activeFilter==='all'||n.cat===activeFilter;
+return matchTerm&&matchCat;
+});
+filtered.sort((a,b)=>b.t-a.t);
+if(filtered.length===0){
+grid.innerHTML='<div class="empty-state"><h3>No niches found</h3><p>Try a different search term</p></div>';
+return;
+}
+grid.innerHTML=filtered.map(n=>`
+<div class="niche-card" onclick="showDetail('${n.slug}')">
+<div class="niche-header">
+<span class="niche-name">${n.nm}</span>
+<span class="grade-badge grade-${n.g}">${n.g} · ${n.t}/25</span>
+</div>
+${renderBar('passion',n.p,'Passion')}
+${renderBar('buy',n.bf,'Buy')}
+${renderBar('gift',n.gf,'Gift')}
+${renderBar('comp',n.c,'Comp.')}
+${renderBar('trend',n.tr,'Trend')}
+<div class="niche-meta">
+<span>AOV $${n.ao}</span>
+<span>${n.comp} comp.</span>
+<span>${n.etsy.toLocaleString()} Etsy results</span>
+</div>
+</div>`).join('');
+}
+
+function renderBar(type,val,label){
+const colors={passion:['#e17055','#ff7675'],buy:['#00b894','#55efc4'],gift:['#6c5ce7','#a29bfe'],comp:['#fdcb6e','#f39c12'],trend:['#00cec9','#81ecec']};
+const pct=(val/5)*100;
+return `<div class="niche-bar"><span class="bar-label">${label}</span><div class="bar-track"><div class="bar-fill ${type}" style="width:${pct}%"></div></div><span class="bar-value">${val}</span></div>`;
+}
+
+function showDetail(slug){
+const n=niches.find(x=>x.slug===slug);if(!n)return;
+document.querySelectorAll('.niche-card').forEach(c=>c.classList.remove('selected'));
+event.currentTarget.classList.add('selected');
+const panel=document.getElementById('detailPanel');
+panel.classList.add('active');
+panel.innerHTML=`
+<div class="detail-header">
+<div>
+<div class="detail-title">${n.nm}</div>
+<div style="color:var(--dim);margin-top:.25rem">${catNames[n.cat]} · ${n.etsy.toLocaleString()} Etsy results</div>
+</div>
+<div class="detail-grade grade-${n.g}">${n.g}-Grade · ${n.t}/25</div>
+</div>
+<div class="detail-scores">
+<div class="score-box"><div class="label">Passion</div><div class="value" style="color:${n.p>=4?'var(--green)':n.p>=3?'var(--yellow)':'var(--orange)'}">${n.p}/5</div></div>
+<div class="score-box"><div class="label">Buy Freq</div><div class="value" style="color:${n.bf>=4?'var(--green)':n.bf>=3?'var(--yellow)':'var(--orange)'}">${n.bf}/5</div></div>
+<div class="score-box"><div class="label">Gift Pot.</div><div class="value" style="color:${n.gf>=4?'var(--green)':n.gf>=3?'var(--yellow)':'var(--orange)'}">${n.gf}/5</div></div>
+<div class="score-box"><div class="label">Low Comp.</div><div class="value" style="color:${n.c>=4?'var(--green)':n.c>=3?'var(--yellow)':'var(--orange)'}">${n.c}/5</div></div>
+<div class="score-box"><div class="label">Trend</div><div class="value" style="color:${n.tr>=4?'var(--green)':n.tr>=3?'var(--yellow)':'var(--orange)'}">${n.tr}/5</div></div>
+</div>
+<div class="detail-section">
+<h3>💰 Profit Estimate</h3>
+<p>Average Order Value: <strong>$${n.ao}</strong> · Competition: <strong>${n.comp}</strong> · ${n.t>=18?'🟢 Strong opportunity — start now':n.t>=14?'🟡 Viable — test with small batch':'🔴 Competitive — find sub-niche'}</p>
+</div>
+<div class="detail-section">
+<h3>🎨 Design Strategy</h3>
+<p>${n.design}</p>
+</div>
+<div class="detail-section">
+<h3>📦 Best Products</h3>
+<p>${n.prds.map(p=>p.replace(/-/g,' ')).join(' · ')}</p>
+</div>
+<div class="detail-section">
+<h3>📝 Key Notes</h3>
+<ul>${n.notes.map(note=>`<li>${note}</li>`).join('')}</ul>
+</div>
+<div class="detail-section">
+<h3>🎯 Sub-Niche Formula</h3>
+<p><strong>Too broad:</strong> "${n.nm}" (${n.etsy.toLocaleString()} results, hard to rank)<br>
+<strong>Better:</strong> Go one level deeper (2K-5K results)<br>
+<strong>Best:</strong> Pair with hobby/identity: "Pickleball Dad" or "ER Nurse ADHD Mom"</p>
+</div>
+<div class="cta-row">
+<a href="#" class="cta-btn cta-primary" onclick="alert('This niche + 79 more with full roadmaps in Pro Bundle ($39)')">Get Full Roadmap — Pro $39</a>
+<a href="#" class="cta-btn cta-secondary" onclick="navigator.clipboard.writeText('${n.slug}');alert('Copied: ${n.slug}')">Copy Slug</a>
+</div>
+`;
+panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+document.getElementById('search').addEventListener('input',renderGrid);
+document.getElementById('filters').addEventListener('click',e=>{
+if(e.target.classList.contains('filter-btn')){
+document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+e.target.classList.add('active');
+renderGrid();
+}});
+renderGrid();
+</script>
+</body>
+</html>

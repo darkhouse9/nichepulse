@@ -1,10 +1,12 @@
 """NichePulse — AI-Powered Niche Scoring Engine
 Scores niches on 5 dimensions using live data signals.
+Loads niche database from data/niche-database.json (v2.0 — 80+ niches).
 """
 
 from dataclasses import dataclass, field
 from typing import Optional
-import math
+import json
+import os
 
 
 @dataclass
@@ -73,68 +75,39 @@ def score_niche(
     )
 
 
-# Pre-validated niche database from market research
-NICHE_DATABASE = {
-    "mushroom foraging": score_niche(
-        "Mushroom Foraging", 5, 4, 4, 5, 4,
-        notes=["Booming mycology community", "Etsy <500 quality designs", "Field guide cross-sell potential"],
-    ),
-    "birding": score_niche(
-        "Birding / Birdwatching", 5, 4, 4, 4, 3,
-        notes=["Audubon Society crossover", "Binocular/accessory buyers", "Facebook groups 500K+ members"],
-    ),
-    "native plants": score_niche(
-        "Native Plants / Pollinator Gardening", 4, 4, 3, 5, 4,
-        notes=["Eco-conscious buyer", "Seed company partnerships", "Google Trends +34% 2yr"],
-    ),
-    "leave no trace": score_niche(
-        "Leave No Trace / Outdoor Ethics", 4, 3, 3, 4, 4,
-        notes=["REI audience overlap", "Patagonia brand aesthetic buyers", "Growing trail culture"],
-    ),
-    "trail running": score_niche(
-        "Trail Running / Ultralight", 5, 5, 3, 3, 4,
-        notes=["High AOV ($34-65)", "Strava culture = identity purchase", "Race event tie-ins"],
-    ),
-    "kayaking": score_niche(
-        "Kayaking / Paddle Sports", 4, 3, 4, 4, 3,
-        notes=["Paddle sports growing 12% YoY", "Trip/rental company B2B potential"],
-    ),
-    "hammock camping": score_niche(
-        "Hammock Camping", 4, 3, 4, 5, 3,
-        notes=["Dedicated Reddit 200K+", "Gear-focused buyers", "Instagram #hammockcamping 1M+ posts"],
-    ),
-    "vanlife": score_niche(
-        "Vanlife / Van Conversion", 5, 4, 3, 2, 3,
-        notes=["High identity purchase", "YouTube creator audience", "Competitive but premium pricing works"],
-    ),
-    "mushroom": score_niche(
-        "Mushroom Foraging", 5, 4, 4, 5, 4,
-    ),
-    "women outdoor": score_niche(
-        "Women's Outdoor Identity", 4, 4, 4, 4, 4,
-        notes=["SheE exploding", "Higher willingness to pay", "Community-driven purchases"],
-    ),
-    "national parks": score_niche(
-        "National Park-Specific", 4, 3, 5, 2, 3,
-        notes=["Gift-first market", "NPS centennial bump", "Competitive but 300M visitors/year"],
-    ),
-    "sourdough": score_niche(
-        "Sourdough / Artisan Baking", 4, 5, 5, 3, 2,
-        notes=["Pandemic boom stabilized", "Kitchen accessory upsell", "High gift frequency"],
-    ),
-    "astrology": score_niche(
-        "Astrology / Zodiac", 4, 5, 5, 2, 3,
-        notes=["Moon phase merch trending", "Taste-driven audience", "Very competitive but high volume"],
-    ),
-    "cottagecore": score_niche(
-        "Cottagecore / Grandmacore", 3, 3, 4, 3, 2,
-        notes=["Aesthetic-driven holiday 2022-23", "Still selling but peaking", "Declining trend"],
-    ),
-    "plant mom": score_niche(
-        "Plant Mom / Plant Parent", 4, 4, 5, 3, 3,
-        notes=["Instagram #plantmom 8M+ posts", "High gift frequency", "Moderate competition"],
-    ),
-}
+def _load_niche_database() -> dict:
+    """Load niche database from JSON file. Returns dict of slug -> NicheScore."""
+    db_path = os.path.join(os.path.dirname(__file__), "data", "niche-database.json")
+    try:
+        with open(db_path, "r") as f:
+            data = json.load(f)
+        db = {}
+        for niche in data.get("niches", []):
+            slug = niche.get("slug", "").lower()
+            if slug:
+                db[slug] = NicheScore(
+                    name=niche["name"],
+                    passion=niche.get("passion", 3),
+                    buy_frequency=niche.get("buy_freq", 3),
+                    gift_potential=niche.get("gift", 3),
+                    competition=niche.get("comp", 3),
+                    trend=niche.get("trend", 3),
+                    notes=niche.get("notes", []),
+                    sources={
+                        "avg_order": niche.get("avg_order"),
+                        "etsy_results": niche.get("etsy_results"),
+                        "competition_level": niche.get("competition"),
+                        "top_products": niche.get("top_products"),
+                        "design_angle": niche.get("design_angle"),
+                    },
+                )
+        return db
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+# Load database at import time
+NICHE_DATABASE = _load_niche_database()
 
 
 def get_niche(keyword: str) -> Optional[NicheScore]:
