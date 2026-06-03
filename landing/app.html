@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NichePulse 🎯 — Find Your Winning Niche</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#08080f;--bg2:#0e0e1a;--card:#141422;--card2:#1a1a2e;
+--border:#252540;--accent:#7c6cf0;--accent2:#00d4aa;--accent3:#f78ca0;
+--text:#eef0f6;--dim:#7a7f96;--green:#00e676;--yellow:#ffd54f;--orange:#ff8a65;--red:#ff5252;
+--radius:14px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+/* Animated BG */
+.bg-orbs{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.15;animation:float 20s ease-in-out infinite}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,var(--accent),transparent);top:-10%;left:-10%}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,var(--accent2),transparent);bottom:-10%;right:-10%;animation-delay:-7s}
+.orb3{width:400px;height:400px;background:radial-gradient(circle,var(--accent3),transparent);top:40%;left:50%;animation-delay:-14s}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(50px,-30px) scale(1.1)}66%{transform:translate(-30px,50px) scale(.9)}}
+
+.page{position:relative;z-index:1}
+
+/* NAV */
+.nav{display:flex;justify-content:space-between;align-items:center;padding:1.2rem 3rem;position:sticky;top:0;z-index:100;background:rgba(8,8,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{font-size:1.3rem;font-weight:800;letter-spacing:-.02em}
+.nav-logo .dot{color:var(--accent)}
+.nav-links{display:flex;gap:2rem;align-items:center}
+.nav-links a{color:var(--dim);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{padding:.5rem 1.2rem;background:linear-gradient(135deg,var(--accent),#9b8afb);color:#fff;border-radius:10px;font-weight:600;font-size:.85rem;text-decoration:none;transition:transform .2s}
+.nav-cta:hover{transform:scale(1.05)}
+
+/* HERO */
+.hero{text-align:center;padding:5rem 2rem 4rem;max-width:800px;margin:0 auto}
+.hero-badge{display:inline-block;padding:.4rem 1rem;background:rgba(124,108,240,.12);border:1px solid rgba(124,108,240,.25);border-radius:20px;font-size:.8rem;color:var(--accent);font-weight:600;margin-bottom:1.5rem}
+.hero h1{font-size:3.5rem;font-weight:800;line-height:1.1;margin-bottom:1.2rem;letter-spacing:-.03em}
+.hero h1 .grad{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:1.2rem;color:var(--dim);max-width:600px;margin:0 auto 2.5rem}
+.hero-cta{display:inline-flex;align-items:center;gap:.5rem;padding:.9rem 2.2rem;background:linear-gradient(135deg,var(--accent),#9b8afb);color:#fff;border-radius:12px;font-weight:700;font-size:1.05rem;text-decoration:none;transition:all .3s;box-shadow:0 4px 24px rgba(124,108,240,.3)}
+.hero-cta:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(124,108,240,.4)}
+.hero-stats{display:flex;justify-content:center;gap:3rem;margin-top:3rem}
+.stat{text-align:center}
+.stat-num{font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{font-size:.8rem;color:var(--dim)}
+
+/* MAIN APP */
+.app-section{max-width:1200px;margin:0 auto;padding:0 2rem 4rem}
+.app-container{display:grid;grid-template-columns:380px 1fr;gap:2rem;min-height:600px}
+
+/* SIDEBAR */
+.sidebar{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;height:fit-content;max-height:80vh;overflow-y:auto}
+.sidebar::-webkit-scrollbar{width:6px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.sidebar h3{font-size:.85rem;color:var(--dim);font-weight:600;margin-bottom:1rem;text-transform:uppercase;letter-spacing:.05em}
+.search-wrap{position:relative;margin-bottom:1rem}
+.search-wrap input{width:100%;padding:.7rem 1rem .7rem 2.5rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.9rem;outline:none;transition:border-color .2s}
+.search-wrap input:focus{border-color:var(--accent)}
+.search-wrap input::placeholder{color:var(--dim)}
+.search-icon{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);font-size:.9rem;opacity:.5}
+.cats{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
+.cat{padding:.3rem .7rem;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;font-size:.75rem;transition:all .2s}
+.cat:hover,.cat.active{border-color:var(--accent);color:var(--accent);background:rgba(124,108,240,.08)}
+.niche-list{display:flex;flex-direction:column;gap:.5rem}
+.niche-item{display:flex;align-items:center;gap:.75rem;padding:.75rem;border-radius:10px;cursor:pointer;transition:all .2s;border:1px solid transparent}
+.niche-item:hover{background:var(--card2);border-color:var(--border)}
+.niche-item.active{border-color:var(--accent);background:rgba(124,108,240,.08)}
+.niche-icon{font-size:1.3rem;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--bg);border-radius:8px;flex-shrink:0}
+.niche-info{flex:1;min-width:0}
+.niche-name{font-weight:600;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.niche-meta{font-size:.75rem;color:var(--dim)}
+.niche-score{font-weight:700;font-size:.9rem;padding:.2rem .5rem;border-radius:6px}
+.score-S{background:rgba(0,230,118,.15);color:var(--green)}
+.score-A{background:rgba(0,212,170,.12);color:var(--accent2)}
+.score-B{background:rgba(255,213,79,.12);color:var(--yellow)}
+.score-C{background:rgba(255,138,101,.12);color:var(--orange)}
+
+/* DETAIL PANEL */
+.detail{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:2.5rem;min-height:600px}
+.detail-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:400px;text-align:center}
+.detail-empty .icon{font-size:4rem;margin-bottom:1rem;opacity:.3}
+.detail-empty p{color:var(--dim);max-width:300px}
+.detail-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2rem}
+.detail-title{font-size:2rem;font-weight:800;line-height:1.2}
+.detail-subtitle{color:var(--dim);font-size:.9rem;margin-top:.25rem}
+.detail-grade{padding:.5rem 1.5rem;border-radius:12px;font-weight:800;font-size:1.5rem}
+.detail-badge{display:inline-block;padding:.25rem .75rem;background:rgba(124,108,240,.1);border-radius:8px;font-size:.75rem;color:var(--accent);font-weight:600;margin-top:.5rem}
+.scores-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:2.5rem}
+.score-card{text-align:center;padding:1.2rem .5rem;background:var(--bg);border-radius:12px;border:1px solid var(--border)}
+.score-card .bar-visual{height:80px;display:flex;align-items:flex-end;justify-content:center;margin-bottom:.5rem}
+.score-card .bar-inner{width:24px;border-radius:6px 6px 0 0;transition:height .6s cubic-bezier(.34,1.56,.64,1)}
+.score-card .bar-inner.passion{background:linear-gradient(180deg,#ff7675,#e17055)}
+.score-card .bar-inner.buy{background:linear-gradient(180deg,#55efc4,#00b894)}
+.score-card .bar-inner.gift{background:linear-gradient(180deg,#a29bfe,#6c5ce7)}
+.score-card .bar-inner.comp{background:linear-gradient(180deg,#ffeaa7,#fdcb6e)}
+.score-card .bar-inner.trend{background:linear-gradient(180deg,#81ecec,#00cec9)}
+.score-card .val{font-size:1.3rem;font-weight:800}
+.score-card .lbl{font-size:.7rem;color:var(--dim);margin-top:.2rem}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem}
+.detail-box{background:var(--bg);border-radius:12px;padding:1.2rem;border:1px solid var(--border)}
+.detail-box h4{font-size:.8rem;color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem}
+.detail-box p,.detail-box li{font-size:.9rem;color:var(--dim)}
+.detail-box ul{padding-left:1.2rem}
+.detail-box .big{font-size:1.8rem;font-weight:800;color:var(--text)}
+.detail-box .big .unit{font-size:.9rem;font-weight:400;color:var(--dim)}
+.profit-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:.5rem}
+.profit-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent2),var(--green));transition:width .6s}
+.section-title{font-size:1rem;font-weight:700;margin-bottom:.75rem;margin-top:1.5rem}
+.roadmap-timeline{display:flex;flex-direction:column;gap:0}
+.roadmap-phase{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border)}
+.roadmap-phase:last-child{border:none}
+.roadmap-dot{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;flex-shrink:0}
+.roadmap-content h5{font-weight:700;margin-bottom:.2rem}
+.roadmap-content p{font-size:.85rem;color:var(--dim)}
+
+/* CTA SECTION */
+.cta-section{text-align:center;padding:4rem 2rem;background:linear-gradient(180deg,var(--bg),var(--bg2));border-top:1px solid var(--border)}
+.cta-section h2{font-size:2rem;font-weight:800;margin-bottom:1rem}
+.cta-section p{color:var(--dim);margin-bottom:2rem}
+.cta-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.cta-btn{padding:.8rem 2rem;border-radius:12px;font-weight:700;font-size:1rem;text-decoration:none;transition:all .3s}
+.cta-primary{background:linear-gradient(135deg,var(--accent),#9b8afb);color:#fff;box-shadow:0 4px 20px rgba(124,108,240,.3)}
+.cta-primary:hover{transform:translateY(-2px)}
+.cta-secondary{border:1px solid var(--border);color:var(--text)}
+.cta-secondary:hover{border-color:var(--accent)}
+
+footer{text-align:center;padding:2rem;color:var(--dim);font-size:.85rem;border-top:1px solid var(--border)}
+
+@media(max-width:900px){
+.app-container{grid-template-columns:1fr}
+.sidebar{max-height:300px}
+.scores-grid{grid-template-columns:repeat(3,1fr)}
+.detail-grid{grid-template-columns:1fr}
+.hero h1{font-size:2.2rem}
+.nav{padding:1rem 1.5rem}
+.nav-links a:not(.nav-cta){display:none}
+}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+
+<div class="page">
+
+<nav class="nav">
+<div class="nav-logo">🎯 Niche<span class="dot">Pulse</span></div>
+<div class="nav-links">
+<a href="#app">Tool</a>
+<a href="#features">Features</a>
+<a href="#pricing">Pricing</a>
+<a href="#" class="nav-cta">Get Pro $39</a>
+</div>
+</nav>
+
+<section class="hero">
+<div class="hero-badge">🚀 Now with 80+ Niches & Interactive Scoring</div>
+<h1>Your Next Winning Niche, <span class="grad">Scored Instantly</span></h1>
+<p>Stop guessing. Start scoring. Pick any niche and get instant data on passion, profit potential, competition, and the exact design strategy that converts.</p>
+<a href="#app" class="hero-cta">Try It Now → Free</a>
+<div class="hero-stats">
+<div class="stat"><div class="stat-num">80+</div><div class="stat-label">Scored Niches</div></div>
+<div class="stat"><div class="stat-num">5</div><div class="stat-label">Score Dimensions</div></div>
+<div class="stat"><div class="stat-num">10</div><div class="stat-label">Categories</div></div>
+</div>
+</section>
+
+<section class="app-section" id="app">
+<div class="app-container">
+<div class="sidebar">
+<h3>🔍 Find Your Niche</h3>
+<div class="search-wrap">
+<span class="search-icon">🔎</span>
+<input type="text" id="search" placeholder="Search 80+ niches...">
+</div>
+<h3>Categories</h3>
+<div class="cats" id="cats">
+<div class="cat active" data-c="all">All</div>
+</div>
+<div class="niche-list" id="nicheList"></div>
+</div>
+<div class="detail" id="detailPanel">
+<div class="detail-empty">
+<div class="icon">🎯</div>
+<h3>Select a niche to get started</h3>
+<p>Click any niche on the left to see its full score breakdown, profit estimate, design strategy, and 90-day roadmap.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="cta-section" id="pricing">
+<h2>Ready to Dominate Your Niche?</h2>
+<p>Free tier includes 20 niches + CLI tool. Pro Bundle has everything.</p>
+<div class="cta-buttons">
+<a href="#" class="cta-btn cta-primary">Get Pro Bundle — $39</a>
+<a href="#" class="cta-btn cta-secondary">Free CLI Tool</a>
+</div>
+</section>
+
+<footer>🎯 NichePulse © 2026 — Built with AI for creators who stop guessing.</footer>
+
+</div>
+
+<script>
+const NICHES=[{nm:"Pet Memorial",slug:"pet-memorial",t:19,g:"A",p:5,bf:2,gf:5,c:4,tr:3,ao:35,comp:"low",etsy:3200,prds:["Framed prints", "Custom portraits", "Ornaments"],icon:"🐾",cat:"pets",margin:"45-60%",marginPct:85},
+{nm:"Dog Breed Specific",slug:"dog-breed-specific",t:18,g:"A",p:5,bf:4,gf:4,c:3,tr:2,ao:30,comp:"medium",etsy:15000,prds:["T-shirts", "Hoodies", "Mugs", "Tote bags"],icon:"🐕",cat:"pets",margin:"30-45%",marginPct:65},
+{nm:"Cat Breed Specific",slug:"cat-breed-specific",t:17,g:"B",p:5,bf:4,gf:4,c:2,tr:2,ao:22,comp:"high",etsy:28000,prds:["T-shirts", "Mugs", "Stickers", "Prints"],icon:"🐱",cat:"pets",margin:"20-35%",marginPct:40},
+{nm:"Reptile / Amphibian Lovers",slug:"reptile-lovers",t:19,g:"A",p:5,bf:3,gf:3,c:5,tr:3,ao:28,comp:"very-low",etsy:890,prds:["T-shirts", "Stickers", "Patches", "Hoodies"],icon:"🦎",cat:"pets",margin:"45-60%",marginPct:85},
+{nm:"Bird / Avian Owners",slug:"bird-owners",t:18,g:"A",p:5,bf:3,gf:3,c:4,tr:3,ao:26,comp:"low",etsy:2100,prds:["T-shirts", "Stickers", "Mugs"],icon:"🦜",cat:"pets",margin:"35-50%",marginPct:70},
+{nm:"Equestrian / Horse Lovers",slug:"equestrian",t:18,g:"A",p:5,bf:4,gf:4,c:4,tr:1,ao:34,comp:"low",etsy:4500,prds:["T-shirts", "Tote bags", "Mugs", "Prints"],icon:"🐴",cat:"pets",margin:"40-55%",marginPct:75},
+{nm:"Exotic Pet Lovers",slug:"exotic-pets",t:19,g:"A",p:5,bf:3,gf:3,c:5,tr:3,ao:30,comp:"very-low",etsy:650,prds:["T-shirts", "Stickers", "Patches", "Hoodies"],icon:"🐍",cat:"pets",margin:"45-60%",marginPct:85},
+{nm:"Rabbit / Bunny Lovers",slug:"rabbit-lovers",t:17,g:"B",p:5,bf:3,gf:3,c:4,tr:2,ao:26,comp:"low",etsy:1800,prds:["T-shirts", "Stickers", "Mugs"],icon:"🐰",cat:"pets",margin:"35-50%",marginPct:70},
+{nm:"Backyard Chickens",slug:"backyard-chickens",t:20,g:"A",p:5,bf:3,gf:4,c:5,tr:3,ao:24,comp:"very-low",etsy:2500,prds:["T-shirts", "Hats", "Signs", "Aprons"],icon:"🐔",cat:"pets",margin:"45-60%",marginPct:85},
+{nm:"Beekeeping",slug:"beekeeping",t:21,g:"A",p:5,bf:3,gf:4,c:5,tr:4,ao:28,comp:"very-low",etsy:2200,prds:["T-shirts", "Mugs", "Hats", "Gloves"],icon:"🐝",cat:"pets",margin:"45-60%",marginPct:85},
+{nm:"Wolf / Wildlife Lovers",slug:"wolf-wildlife",t:15,g:"B",p:4,bf:2,gf:3,c:4,tr:2,ao:24,comp:"low",etsy:3500,prds:["T-shirts", "Hoodies", "Mugs", "Prints"],icon:"🐺",cat:"pets",margin:"35-50%",marginPct:70},
+{nm:"Dog Mom / Dad Pride",slug:"dog-mom-dad",t:19,g:"A",p:5,bf:5,gf:5,c:2,tr:2,ao:24,comp:"high",etsy:45000,prds:["T-shirts", "Mugs", "Tote bags", "Hoodies"],icon:"🐕",cat:"pets",margin:"20-35%",marginPct:40},
+{nm:"Cat Mom / Dad Pride",slug:"cat-mom-dad",t:19,g:"A",p:5,bf:5,gf:5,c:2,tr:2,ao:22,comp:"high",etsy:38000,prds:["T-shirts", "Mugs", "Tote bags", "Hoodies"],icon:"🐱",cat:"pets",margin:"20-35%",marginPct:40},
+{nm:"Golden Retriever",slug:"golden-retriever",t:17,g:"B",p:5,bf:4,gf:4,c:2,tr:2,ao:28,comp:"high",etsy:22000,prds:["T-shirts", "Hoodies", "Mugs", "Ornaments"],icon:"🐕",cat:"pets",margin:"20-35%",marginPct:40},
+{nm:"French Bulldog",slug:"french-bulldog",t:17,g:"B",p:5,bf:4,gf:4,c:2,tr:2,ao:26,comp:"high",etsy:18000,prds:["T-shirts", "Hoodies", "Mugs", "Bandanas"],icon:"🐕",cat:"pets",margin:"20-35%",marginPct:40},
+{nm:"Service Dog / ESA",slug:"service-esa-dog",t:21,g:"A",p:5,bf:3,gf:4,c:5,tr:4,ao:30,comp:"very-low",etsy:2500,prds:["T-shirts", "Patches", "Stickers", "Bandanas"],icon:"🦮",cat:"pets",margin:"45-60%",marginPct:85},
+{nm:"Pet Portrait Art",slug:"pet-portrait-art",t:19,g:"A",p:5,bf:2,gf:5,c:4,tr:3,ao:45,comp:"low",etsy:12000,prds:["Custom prints", "Framed art", "Ornaments", "Mugs"],icon:"🎨",cat:"pets",margin:"40-55%",marginPct:75},
+{nm:"Pet Rescue / Foster",slug:"pet-rescue-foster",t:21,g:"A",p:5,bf:3,gf:5,c:5,tr:3,ao:26,comp:"very-low",etsy:4500,prds:["T-shirts", "Stickers", "Tote bags", "Mugs"],icon:"🐾",cat:"pets",margin:"45-60%",marginPct:85},
+{nm:"Horseback Riding",slug:"horseback-riding",t:18,g:"A",p:5,bf:4,gf:4,c:4,tr:1,ao:32,comp:"low",etsy:6000,prds:["T-shirts", "Hoodies", "Mugs", "Tote bags"],icon:"🐴",cat:"pets",margin:"40-55%",marginPct:75},
+{nm:"Dogs (General)",slug:"dog-lovers",t:16,g:"B",p:5,bf:4,gf:4,c:1,tr:2,ao:22,comp:"very-high",etsy:80000,prds:["T-shirts", "Mugs", "Tote bags", "Stickers"],icon:"🐕",cat:"pets",margin:"15-25%",marginPct:25},
+{nm:"Cats (General)",slug:"cat-lovers",t:16,g:"B",p:5,bf:4,gf:4,c:1,tr:2,ao:20,comp:"very-high",etsy:65000,prds:["T-shirts", "Mugs", "Stickers"],icon:"🐱",cat:"pets",margin:"15-25%",marginPct:25},
+{nm:"Retro Gaming",slug:"retro-gaming",t:20,g:"A",p:5,bf:4,gf:4,c:3,tr:4,ao:26,comp:"medium",etsy:18000,prds:["Hoodies", "T-shirts", "Mugs", "Desk mats"],icon:"🎮",cat:"gaming",margin:"35-50%",marginPct:70},
+{nm:"Gaming Parents",slug:"gaming-parents",t:19,g:"A",p:4,bf:3,gf:5,c:4,tr:3,ao:24,comp:"low",etsy:5200,prds:["T-shirts", "Mugs", "Onesies", "Hoodies"],icon:"👨‍👧",cat:"gaming",margin:"35-50%",marginPct:70},
+{nm:"Indie Games",slug:"indie-games",t:19,g:"A",p:5,bf:3,gf:4,c:4,tr:3,ao:28,comp:"low",etsy:3800,prds:["T-shirts", "Stickers", "Posters", "Patches"],icon:"🕹️",cat:"gaming",margin:"35-50%",marginPct:70},
+{nm:"Streamer / Creator Culture",slug:"streamer-culture",t:18,g:"A",p:5,bf:4,gf:3,c:3,tr:3,ao:22,comp:"medium",etsy:8500,prds:["T-shirts", "Mugs", "Mouse pads", "Desk mats"],icon:"📺",cat:"gaming",margin:"25-40%",marginPct:55},
+{nm:"Esports Culture",slug:"esports-culture",t:17,g:"B",p:5,bf:3,gf:3,c:3,tr:3,ao:28,comp:"medium",etsy:12000,prds:["T-shirts", "Hoodies", "Mouse pads"],icon:"🏆",cat:"gaming",margin:"25-40%",marginPct:55},
+{nm:"Dungeons & Dragons",slug:"dnd",t:19,g:"A",p:5,bf:3,gf:4,c:3,tr:4,ao:26,comp:"medium",etsy:10000,prds:["T-shirts", "Dice", "Mugs", "Minis"],icon:"🐉",cat:"gaming",margin:"35-50%",marginPct:70},
+{nm:"Magic: The Gathering",slug:"mtg",t:17,g:"B",p:5,bf:3,gf:3,c:3,tr:3,ao:24,comp:"medium",etsy:6000,prds:["T-shirts", "Playmats", "Deck boxes", "Sleeves"],icon:"🃏",cat:"gaming",margin:"25-40%",marginPct:55},
+{nm:"Pokemon",slug:"pokemon",t:18,g:"A",p:5,bf:3,gf:4,c:3,tr:3,ao:24,comp:"medium",etsy:15000,prds:["T-shirts", "Hoodies", "Plushies", "Starters"],icon:"🔴",cat:"gaming",margin:"25-40%",marginPct:55},
+{nm:"Nintendo",slug:"nintendo",t:18,g:"A",p:5,bf:3,gf:4,c:3,tr:3,ao:24,comp:"medium",etsy:15000,prds:["T-shirts", "Hoodies", "Mugs", "Figures"],icon:"🎮",cat:"gaming",margin:"25-40%",marginPct:55},
+{nm:"PC Gaming",slug:"pc-gaming",t:19,g:"A",p:5,bf:4,gf:4,c:3,tr:3,ao:26,comp:"medium",etsy:12000,prds:["T-shirts", "Hoodies", "Mouse pads", "Desk mats"],icon:"💻",cat:"gaming",margin:"35-50%",marginPct:70},
+{nm:"Mobile Gaming",slug:"mobile-gaming",t:16,g:"B",p:4,bf:3,gf:3,c:3,tr:3,ao:22,comp:"medium",etsy:8000,prds:["T-shirts", "Mugs", "Phone cases", "Pop sockets"],icon:"📱",cat:"gaming",margin:"25-40%",marginPct:55},
+{nm:"VR / Virtual Reality",slug:"vr-gaming",t:18,g:"A",p:4,bf:2,gf:3,c:5,tr:4,ao:26,comp:"very-low",etsy:3000,prds:["T-shirts", "Mugs", "Hats", "Stickers"],icon:"🥽",cat:"gaming",margin:"40-55%",marginPct:75},
+{nm:"Anime / Manga",slug:"anime-manga",t:19,g:"A",p:5,bf:4,gf:3,c:3,tr:4,ao:26,comp:"medium",etsy:8000,prds:["T-shirts", "Hoodies", "Stickers", "Figures"],icon:"⛩️",cat:"gaming",margin:"35-50%",marginPct:70},
+{nm:"K-Pop",slug:"kpop",t:19,g:"A",p:5,bf:4,gf:3,c:3,tr:4,ao:24,comp:"medium",etsy:6000,prds:["T-shirts", "Hoodies", "Stickers", "Photocards"],icon:"🎤",cat:"gaming",margin:"25-40%",marginPct:55},
+{nm:"Disney / Theme Parks",slug:"disney-theme-parks",t:16,g:"B",p:5,bf:2,gf:4,c:2,tr:3,ao:22,comp:"high",etsy:30000,prds:["T-shirts", "Hoodies", "Ears", "Tote bags"],icon:"🏰",cat:"gaming",margin:"20-35%",marginPct:40},
+{nm:"Harry Potter / Wizard",slug:"harry-potter",t:16,g:"B",p:5,bf:2,gf:4,c:2,tr:3,ao:24,comp:"high",etsy:25000,prds:["T-shirts", "Hoodies", "Robes", "Wands"],icon:"⚡",cat:"gaming",margin:"20-35%",marginPct:40},
+{nm:"Marvel / Superheroes",slug:"marvel-superheroes",t:15,g:"B",p:5,bf:2,gf:3,c:2,tr:3,ao:24,comp:"high",etsy:22000,prds:["T-shirts", "Hoodies", "Mugs", "Stickers"],icon:"🦸",cat:"gaming",margin:"20-35%",marginPct:40},
+{nm:"Star Wars",slug:"star-wars",t:15,g:"B",p:5,bf:2,gf:3,c:2,tr:3,ao:24,comp:"high",etsy:20000,prds:["T-shirts", "Hoodies", "Lightsabers", "Mugs"],icon:"⭐",cat:"gaming",margin:"20-35%",marginPct:40},
+{nm:"Cosplay",slug:"cosplay",t:17,g:"B",p:5,bf:2,gf:4,c:3,tr:3,ao:28,comp:"medium",etsy:9000,prds:["T-shirts", "Hoodies", "Prints", "Props"],icon:"🎭",cat:"gaming",margin:"35-50%",marginPct:70},
+{nm:"Speedrunning",slug:"speedrunning",t:19,g:"A",p:5,bf:2,gf:4,c:5,tr:3,ao:26,comp:"very-low",etsy:2000,prds:["T-shirts", "Mugs", "Stickers", "Patches"],icon:"⏱️",cat:"gaming",margin:"45-60%",marginPct:85},
+{nm:"Nurses / Healthcare",slug:"nurses-healthcare",t:19,g:"A",p:5,bf:3,gf:5,c:3,tr:3,ao:22,comp:"medium",etsy:45000,prds:["T-shirts", "Mugs", "Tote bags"],icon:"🩺",cat:"professions",margin:"25-40%",marginPct:55},
+{nm:"Teachers",slug:"teachers",t:19,g:"A",p:5,bf:3,gf:5,c:3,tr:3,ao:20,comp:"medium",etsy:38000,prds:["T-shirts", "Mugs", "Tote bags"],icon:"📚",cat:"professions",margin:"25-40%",marginPct:55},
+{nm:"Blue Collar Trades",slug:"blue-collar",t:20,g:"A",p:5,bf:4,gf:4,c:4,tr:3,ao:30,comp:"low",etsy:7200,prds:["T-shirts", "Hoodies", "Mugs", "Stickers"],icon:"🔧",cat:"professions",margin:"40-55%",marginPct:75},
+{nm:"Software Engineers / Tech",slug:"tech-workers",t:18,g:"A",p:5,bf:4,gf:2,c:4,tr:3,ao:24,comp:"medium",etsy:15000,prds:["T-shirts", "Mugs", "Stickers", "Desk toys"],icon:"💻",cat:"professions",margin:"30-45%",marginPct:65},
+{nm:"First Responders",slug:"first-responders",t:20,g:"A",p:5,bf:4,gf:4,c:4,tr:3,ao:28,comp:"low",etsy:6800,prds:["T-shirts", "Hoodies", "Mugs", "Patches"],icon:"🚒",cat:"professions",margin:"40-55%",marginPct:75},
+{nm:"Military / Veterans",slug:"military-veterans",t:18,g:"A",p:5,bf:3,gf:4,c:3,tr:3,ao:32,comp:"medium",etsy:22000,prds:["T-shirts", "Hoodies", "Mugs", "Patches", "Flags"],icon:"🎖️",cat:"professions",margin:"35-50%",marginPct:70},
+{nm:"Firefighter",slug:"firefighter",t:20,g:"A",p:5,bf:4,gf:4,c:4,tr:3,ao:30,comp:"low",etsy:6500,prds:["T-shirts", "Hoodies", "Mugs", "Patches"],icon:"🚒",cat:"professions",margin:"40-55%",marginPct:75},
+{nm:"Police / Law Enforcement",slug:"police-leo",t:18,g:"A",p:5,bf:3,gf:4,c:3,tr:3,ao:28,comp:"medium",etsy:12000,prds:["T-shirts", "Hoodies", "Mugs", "Patches"],icon:"🚔",cat:"professions",margin:"25-40%",marginPct:55},
+{nm:"EMT / Paramedic",slug:"emt-paramedic",t:19,g:"A",p:5,bf:3,gf:4,c:4,tr:3,ao:26,comp:"low",etsy:4000,prds:["T-shirts", "Mugs", "Tote bags"],icon:"🚑",cat:"professions",margin:"35-50%",marginPct:70},
+{nm:"Remote Workers",slug:"remote-workers",t:16,g:"B",p:3,bf:4,gf:3,c:3,tr:3,ao:22,comp:"medium",etsy:18000,prds:["T-shirts", "Mugs", "Desk pads", "Mouse pads"],icon:"🏠",cat:"professions",margin:"25-40%",marginPct:55},
+{nm:"Dental / Orthodontist",slug:"dental",t:19,g:"A",p:4,bf:3,gf:5,c:4,tr:3,ao:22,comp:"low",etsy:4500,prds:["T-shirts", "Mugs", "Tote bags"],icon:"🦷",cat:"professions",margin:"35-50%",marginPct:70},
+{nm:"Veterinarian / Vet Tech",slug:"veterinary",t:19,g:"A",p:5,bf:3,gf:4,c:4,tr:3,ao:24,comp:"low",etsy:5500,prds:["T-shirts", "Mugs", "Tote bags", "Scrubs"],icon:"🐾",cat:"professions",margin:"35-50%",marginPct:70},
+{nm:"Pilot / Aviation",slug:"pilot-aviation",t:17,g:"B",p:5,bf:2,gf:3,c:4,tr:3,ao:28,comp:"low",etsy:3500,prds:["T-shirts", "Mugs", "Patches", "Models"],icon:"✈️",cat:"professions",margin:"35-50%",marginPct:70},
+{nm:"Electrician",slug:"electrician",t:19,g:"A",p:5,bf:3,gf:4,c:4,tr:3,ao:28,comp:"low",etsy:3500,prds:["T-shirts", "Mugs", "Hats", "Stickers"],icon:"⚡",cat:"professions",margin:"35-50%",marginPct:70},
+{nm:"Welder",slug:"welder",t:19,g:"A",p:5,bf:3,gf:3,c:5,tr:3,ao:30,comp:"very-low",etsy:1800,prds:["T-shirts", "Hoodies", "Mugs", "Helmets"],icon:"🔥",cat:"professions",margin:"45-60%",marginPct:85},
+{nm:"Trucker / CDL",slug:"trucker-cdl",t:19,g:"A",p:5,bf:3,gf:4,c:4,tr:3,ao:28,comp:"low",etsy:5500,prds:["T-shirts", "Hats", "Mugs", "Patches"],icon:"🚛",cat:"professions",margin:"35-50%",marginPct:70},
+{nm:"Barista / Coffee Shop",slug:"barista",t:17,g:"B",p:4,bf:4,gf:3,c:3,tr:3,ao:20,comp:"medium",etsy:8000,prds:["T-shirts", "Mugs", "Tote bags", "Aprons"],icon:"☕",cat:"professions",margin:"25-40%",marginPct:55},
+{nm:"Hairstylist / Barber",slug:"hairstylist-barber",t:16,g:"B",p:4,bf:3,gf:3,c:3,tr:3,ao:22,comp:"medium",etsy:6000,prds:["T-shirts", "Mugs", "Tote bags", "Capes"],icon:"✂️",cat:"professions",margin:"25-40%",marginPct:55},
+{nm:"Mechanic / Auto Shop",slug:"mechanic-auto",t:18,g:"A",p:5,bf:3,gf:3,c:4,tr:3,ao:26,comp:"low",etsy:4000,prds:["T-shirts", "Mugs", "Hats", "Aprons"],icon:"🔧",cat:"professions",margin:"35-50%",marginPct:70},
+{nm:"Real Estate Agent",slug:"real-estate",t:16,g:"B",p:4,bf:3,gf:3,c:3,tr:3,ao:24,comp:"medium",etsy:9000,prds:["T-shirts", "Mugs", "Tote bags", "Magnets"],icon:"🏠",cat:"professions",margin:"25-40%",marginPct:55},
+{nm:"Lawyer / Attorney",slug:"lawyer-attorney",t:15,g:"B",p:4,bf:2,gf:3,c:3,tr:3,ao:26,comp:"medium",etsy:7000,prds:["T-shirts", "Mugs", "Tote bags"],icon:"⚖️",cat:"professions",margin:"25-40%",marginPct:55},
+{nm:"Delivery Driver",slug:"delivery-driver",t:16,g:"B",p:3,bf:4,gf:2,c:3,tr:4,ao:20,comp:"medium",etsy:5000,prds:["T-shirts", "Mugs", "Tote bags"],icon:"🚗",cat:"professions",margin:"25-40%",marginPct:55},
+{nm:"Amazon / Warehouse",slug:"amazon-warehouse",t:14,g:"B",p:3,bf:3,gf:2,c:3,tr:3,ao:20,comp:"medium",etsy:5000,prds:["T-shirts", "Mugs", "Tote bags"],icon:"📦",cat:"professions",margin:"25-40%",marginPct:55},
+{nm:"Plumber",slug:"plumber",t:18,g:"A",p:4,bf:3,gf:4,c:4,tr:3,ao:26,comp:"low",etsy:3000,prds:["T-shirts", "Mugs", "Hats"],icon:"🔧",cat:"professions",margin:"35-50%",marginPct:70},
+{nm:"Landscaper / Lawn Care",slug:"landscaper",t:17,g:"B",p:4,bf:3,gf:3,c:4,tr:3,ao:24,comp:"low",etsy:2500,prds:["T-shirts", "Hats", "Mugs"],icon:"🌿",cat:"professions",margin:"35-50%",marginPct:70},
+{nm:"Pickleball",slug:"pickleball",t:20,g:"A",p:4,bf:3,gf:4,c:5,tr:4,ao:26,comp:"very-low",etsy:1200,prds:["T-shirts", "Mugs", "Hats", "Tote bags"],icon:"🏓",cat:"lifestyle",margin:"45-60%",marginPct:85},
+{nm:"ADHD / Neurodivergent",slug:"adhd-neurodivergent",t:21,g:"A",p:5,bf:4,gf:3,c:5,tr:4,ao:26,comp:"very-low",etsy:2800,prds:["T-shirts", "Hoodies", "Stickers", "Pins"],icon:"🧠",cat:"lifestyle",margin:"45-60%",marginPct:85},
+{nm:"Mental Health Advocacy",slug:"mental-health",t:20,g:"A",p:5,bf:4,gf:4,c:4,tr:3,ao:24,comp:"low",etsy:8500,prds:["T-shirts", "Hoodies", "Tote bags", "Posters"],icon:"💚",cat:"lifestyle",margin:"35-50%",marginPct:70},
+{nm:"Autistic Pride",slug:"autistic-pride",t:21,g:"A",p:5,bf:4,gf:3,c:5,tr:4,ao:25,comp:"very-low",etsy:1500,prds:["T-shirts", "Hoodies", "Stickers", "Pins"],icon:"♾️",cat:"lifestyle",margin:"45-60%",marginPct:85},
+{nm:"Sober Living / Recovery",slug:"sober-living",t:20,g:"A",p:5,bf:3,gf:5,c:5,tr:2,ao:30,comp:"very-low",etsy:1800,prds:["T-shirts", "Hoodies", "Mugs", "Journals"],icon:"🌱",cat:"lifestyle",margin:"45-60%",marginPct:85},
+{nm:"Introverts / Anti-Social",slug:"introverts",t:19,g:"A",p:5,bf:4,gf:3,c:4,tr:3,ao:23,comp:"low",etsy:6500,prds:["T-shirts", "Mugs", "Stickers", "Hoodies"],icon:"📖",cat:"lifestyle",margin:"35-50%",marginPct:70},
+{nm:"Chronic Illness / Spoonie",slug:"spoonie",t:19,g:"A",p:5,bf:3,gf:4,c:4,tr:3,ao:28,comp:"low",etsy:4200,prds:["T-shirts", "Mugs", "Pins", "Stickers", "Tote bags"],icon:"🥄",cat:"lifestyle",margin:"35-50%",marginPct:70},
+{nm:"LGBTQ+ Pride",slug:"lgbtq-pride",t:15,g:"B",p:5,bf:2,gf:4,c:2,tr:2,ao:22,comp:"high",etsy:35000,prds:["T-shirts", "Stickers", "Flags", "Patches"],icon:"🏳️‍🌈",cat:"lifestyle",margin:"20-35%",marginPct:40},
+{nm:"Faith / Christian",slug:"faith-christian",t:19,g:"A",p:5,bf:4,gf:4,c:3,tr:3,ao:24,comp:"medium",etsy:28000,prds:["T-shirts", "Hoodies", "Mugs", "Wall art"],icon:"✝️",cat:"lifestyle",margin:"25-40%",marginPct:55},
+{nm:"Astrology / Zodiac",slug:"astrology-zodiac",t:19,g:"A",p:4,bf:5,gf:5,c:2,tr:3,ao:24,comp:"high",etsy:45000,prds:["T-shirts", "Mugs", "Stickers", "Prints"],icon:"🔮",cat:"lifestyle",margin:"20-35%",marginPct:40},
+{nm:"Cottagecore / Grandmacore",slug:"cottagecore",t:16,g:"B",p:4,bf:3,gf:4,c:3,tr:2,ao:26,comp:"medium",etsy:18000,prds:["T-shirts", "Stickers", "Prints", "Tote bags"],icon:"🌸",cat:"lifestyle",margin:"25-40%",marginPct:55},
+{nm:"Witchy / Occult",slug:"witchy-occult",t:20,g:"A",p:5,bf:4,gf:3,c:4,tr:4,ao:28,comp:"low",etsy:6200,prds:["T-shirts", "Stickers", "Tarot cards", "Prints"],icon:"🔮",cat:"lifestyle",margin:"40-55%",marginPct:75},
+{nm:"Dark Academia",slug:"dark-academia",t:14,g:"B",p:5,bf:2,gf:3,c:2,tr:2,ao:26,comp:"high",etsy:38000,prds:["T-shirts", "Prints", "Journals", "Stickers"],icon:"📖",cat:"lifestyle",margin:"20-35%",marginPct:40},
+{nm:"Vegan / Plant-Based",slug:"vegan",t:17,g:"B",p:5,bf:3,gf:3,c:3,tr:3,ao:24,comp:"medium",etsy:12000,prds:["T-shirts", "Tote bags", "Mugs", "Stickers"],icon:"🌱",cat:"lifestyle",margin:"25-40%",marginPct:55},
+{nm:"Plant Mom / Houseplants",slug:"plant-mom",t:18,g:"A",p:4,bf:3,gf:5,c:3,tr:3,ao:22,comp:"medium",etsy:18000,prds:["T-shirts", "Mugs", "Tote bags", "Planters"],icon:"🪴",cat:"lifestyle",margin:"25-40%",marginPct:55},
+{nm:"Crystals / Healing",slug:"crystals-healing",t:17,g:"B",p:4,bf:3,gf:3,c:4,tr:3,ao:26,comp:"low",etsy:45000,prds:["T-shirts", "Pendants", "Mugs", "Stickers"],icon:"🔮",cat:"lifestyle",margin:"35-50%",marginPct:70},
+{nm:"Tarot / Divination",slug:"tarot-divination",t:17,g:"B",p:4,bf:3,gf:3,c:4,tr:3,ao:26,comp:"low",etsy:8000,prds:["T-shirts", "Card decks", "Mugs", "Prints"],icon:"🃏",cat:"lifestyle",margin:"35-50%",marginPct:70},
+{nm:"Vanlife / Nomad",slug:"vanlife-nomad",t:17,g:"B",p:5,bf:3,gf:3,c:3,tr:3,ao:28,comp:"medium",etsy:12000,prds:["T-shirts", "Stickers", "Mugs", "Prints"],icon:"🚐",cat:"lifestyle",margin:"25-40%",marginPct:55},
+{nm:"Tiny House / Minimalism",slug:"tiny-house-minimalism",t:15,g:"B",p:4,bf:2,gf:3,c:4,tr:2,ao:30,comp:"low",etsy:3500,prds:["T-shirts", "Mugs", "Prints", "Signs"],icon:"🏠",cat:"lifestyle",margin:"35-50%",marginPct:70},
+{nm:"Digital Nomad",slug:"digital-nomad",t:15,g:"B",p:4,bf:3,gf:2,c:3,tr:3,ao:24,comp:"medium",etsy:8000,prds:["T-shirts", "Mugs", "Tote bags", "Laptop stickers"],icon:"💻",cat:"lifestyle",margin:"25-40%",marginPct:55},
+{nm:"Manifestation / Law of Attraction",slug:"manifestation",t:17,g:"B",p:4,bf:3,gf:3,c:4,tr:3,ao:24,comp:"low",etsy:5000,prds:["T-shirts", "Journals", "Mugs", "Crystals"],icon:"✨",cat:"lifestyle",margin:"35-50%",marginPct:70},
+{nm:"Home Brewing / Craft Beer",slug:"home-brewing",t:23,g:"S",p:5,bf:4,gf:5,c:5,tr:4,ao:28,comp:"very-low",etsy:2200,prds:["T-shirts", "Mugs", "Aprons", "Growlers"],icon:"🍺",cat:"hobbies",margin:"45-60%",marginPct:85},
+{nm:"Vinyl Collectors",slug:"vinyl-collectors",t:21,g:"A",p:5,bf:3,gf:4,c:5,tr:4,ao:32,comp:"very-low",etsy:1800,prds:["T-shirts", "Mugs", "Posters", "Record crates"],icon:"💿",cat:"hobbies",margin:"45-60%",marginPct:85},
+{nm:"Coffee Snobs",slug:"coffee-snobs",t:18,g:"A",p:4,bf:5,gf:4,c:2,tr:3,ao:22,comp:"high",etsy:42000,prds:["Mugs", "T-shirts", "Tote bags", "Coasters"],icon:"☕",cat:"hobbies",margin:"20-35%",marginPct:40},
+{nm:"Wine Lovers",slug:"wine-lovers",t:19,g:"A",p:4,bf:4,gf:5,c:3,tr:3,ao:26,comp:"medium",etsy:15000,prds:["Mugs", "Tote bags", "Aprons", "Stemless glasses"],icon:"🍷",cat:"hobbies",margin:"30-45%",marginPct:65},
+{nm:"Whiskey / Bourbon",slug:"whiskey-bourbon",t:17,g:"B",p:4,bf:3,gf:4,c:3,tr:3,ao:28,comp:"medium",etsy:12000,prds:["Mugs", "Glasses", "Coasters", "Tote bags"],icon:"🥃",cat:"hobbies",margin:"25-40%",marginPct:55},
+{nm:"Tea Lovers",slug:"tea-lovers",t:19,g:"A",p:4,bf:4,gf:4,c:4,tr:3,ao:22,comp:"low",etsy:8000,prds:["Mugs", "T-shirts", "Tote bags", "Infusers"],icon:"🍵",cat:"hobbies",margin:"35-50%",marginPct:70},
+{nm:"Cocktail / Mixology",slug:"cocktail-mixology",t:17,g:"B",p:4,bf:3,gf:4,c:3,tr:3,ao:24,comp:"medium",etsy:9000,prds:["Mugs", "Coasters", "Aprons", "Tote bags"],icon:"🍸",cat:"hobbies",margin:"25-40%",marginPct:55},
+{nm:"Baking / Sourdough",slug:"sourdough-baking",t:18,g:"A",p:4,bf:4,gf:5,c:3,tr:2,ao:22,comp:"medium",etsy:15000,prds:["Aprons", "T-shirts", "Mugs", "Towels"],icon:"🥐",cat:"hobbies",margin:"25-40%",marginPct:55},
+{nm:"Cooking / Chef",slug:"cooking-chef",t:17,g:"B",p:4,bf:4,gf:4,c:2,tr:3,ao:22,comp:"high",etsy:25000,prds:["Aprons", "T-shirts", "Mugs", "Towels"],icon:"👨‍🍳",cat:"hobbies",margin:"20-35%",marginPct:40},
+{nm:"Gardening / Vegetable",slug:"gardening-vegetable",t:17,g:"B",p:4,bf:3,gf:4,c:3,tr:3,ao:24,comp:"medium",etsy:10000,prds:["T-shirts", "Hats", "Tote bags", "Gloves"],icon:"🌱",cat:"hobbies",margin:"25-40%",marginPct:55},
+{nm:"Photography",slug:"photography",t:14,g:"B",p:4,bf:2,gf:3,c:3,tr:2,ao:24,comp:"medium",etsy:8000,prds:["T-shirts", "Tote bags", "Mugs", "Prints"],icon:"📷",cat:"hobbies",margin:"25-40%",marginPct:55},
+{nm:"Painting / Fine Art",slug:"painting-fine-art",t:16,g:"B",p:5,bf:2,gf:3,c:4,tr:2,ao:24,comp:"low",etsy:6000,prds:["T-shirts", "Prints", "Mugs", "Tote bags"],icon:"🎨",cat:"hobbies",margin:"35-50%",marginPct:70},
+{nm:"Sewing / Quilting",slug:"sewing-quilting",t:16,g:"B",p:5,bf:2,gf:3,c:4,tr:2,ao:24,comp:"low",etsy:4000,prds:["T-shirts", "Tote bags", "Mugs", "Fabric"],icon:"🧵",cat:"hobbies",margin:"35-50%",marginPct:70},
+{nm:"Knitting / Crochet",slug:"knitting-crochet",t:16,g:"B",p:5,bf:2,gf:3,c:4,tr:2,ao:24,comp:"low",etsy:3500,prds:["T-shirts", "Tote bags", "Mugs", "Yarn bowls"],icon:"🧶",cat:"hobbies",margin:"35-50%",marginPct:70},
+{nm:"Pottery / Ceramics",slug:"pottery-ceramics",t:16,g:"B",p:5,bf:2,gf:3,c:4,tr:2,ao:26,comp:"low",etsy:2500,prds:["T-shirts", "Mugs", "Tote bags", "Tools"],icon:"🏺",cat:"hobbies",margin:"35-50%",marginPct:70},
+{nm:"Woodworking",slug:"woodworking",t:16,g:"B",p:5,bf:2,gf:3,c:4,tr:2,ao:28,comp:"low",etsy:3000,prds:["T-shirts", "Mugs", "Hats", "Aprons"],icon:"🪵",cat:"hobbies",margin:"35-50%",marginPct:70},
+{nm:"Leather Working",slug:"leather-working",t:16,g:"B",p:5,bf:2,gf:3,c:4,tr:2,ao:28,comp:"very-low",etsy:2000,prds:["T-shirts", "Belts", "Wallets", "Keychains"],icon:"👜",cat:"hobbies",margin:"45-60%",marginPct:85},
+{nm:"Jewelry Making",slug:"jewelry-making",t:15,g:"B",p:5,bf:2,gf:3,c:3,tr:2,ao:24,comp:"medium",etsy:4000,prds:["T-shirts", "Tote bags", "Mugs", "Tools"],icon:"💍",cat:"hobbies",margin:"25-40%",marginPct:55},
+{nm:"Candle Making",slug:"candle-making",t:17,g:"B",p:4,bf:3,gf:4,c:3,tr:3,ao:22,comp:"medium",etsy:5000,prds:["T-shirts", "Mugs", "Tote bags", "Wax"],icon:"🕯️",cat:"hobbies",margin:"25-40%",marginPct:55},
+{nm:"3D Printing",slug:"3d-printing",t:18,g:"A",p:5,bf:3,gf:2,c:4,tr:4,ao:24,comp:"low",etsy:2000,prds:["T-shirts", "Mugs", "Figures", "Filament"],icon:"🖨️",cat:"hobbies",margin:"35-50%",marginPct:70},
+{nm:"Model Trains",slug:"model-trains",t:17,g:"B",p:5,bf:2,gf:3,c:5,tr:2,ao:28,comp:"very-low",etsy:800,prds:["T-shirts", "Mugs", "Hats", "Models"],icon:"🚂",cat:"hobbies",margin:"45-60%",marginPct:85},
+{nm:"Astronomy / Space",slug:"astronomy-space",t:16,g:"B",p:4,bf:2,gf:3,c:4,tr:3,ao:28,comp:"low",etsy:6000,prds:["T-shirts", "Mugs", "Posters", "Stickers"],icon:"🌌",cat:"hobbies",margin:"35-50%",marginPct:70},
+{nm:"Fishing",slug:"fishing",t:17,g:"B",p:5,bf:3,gf:3,c:3,tr:3,ao:28,comp:"medium",etsy:25000,prds:["T-shirts", "Hats", "Stickers", "Patches"],icon:"🎣",cat:"hobbies",margin:"25-40%",marginPct:55},
+{nm:"Birdwatching",slug:"birdwatching",t:19,g:"A",p:5,bf:3,gf:4,c:4,tr:3,ao:28,comp:"low",etsy:8900,prds:["T-shirts", "Stickers", "Binoculars", "Field guides"],icon:"🐦",cat:"hobbies",margin:"35-50%",marginPct:70},
+{nm:"Mushroom Foraging",slug:"mushroom-foraging",t:20,g:"A",p:5,bf:3,gf:3,c:5,tr:4,ao:30,comp:"very-low",etsy:420,prds:["T-shirts", "Stickers", "Field guides", "Prints"],icon:"🍄",cat:"hobbies",margin:"45-60%",marginPct:85},
+{nm:"Rock Climbing",slug:"rock-climbing",t:18,g:"A",p:5,bf:3,gf:3,c:4,tr:3,ao:28,comp:"low",etsy:4000,prds:["T-shirts", "Hoodies", "Chalk bags", "Stickers"],icon:"🧗",cat:"hobbies",margin:"35-50%",marginPct:70},
+{nm:"Running / Marathon",slug:"running",t:17,g:"B",p:5,bf:3,gf:3,c:3,tr:3,ao:26,comp:"medium",etsy:18000,prds:["T-shirts", "Shorts", "Socks", "Bibs"],icon:"🏃",cat:"hobbies",margin:"25-40%",marginPct:55},
+{nm:"Golf",slug:"golf",t:17,g:"B",p:4,bf:3,gf:4,c:3,tr:3,ao:28,comp:"medium",etsy:12000,prds:["T-shirts", "Hats", "Polo", "Towels"],icon:"⛳",cat:"hobbies",margin:"25-40%",marginPct:55},
+{nm:"Surfing",slug:"surfing",t:16,g:"B",p:5,bf:2,gf:3,c:3,tr:3,ao:28,comp:"medium",etsy:8000,prds:["T-shirts", "Hoodies", "Stickers", "Board socks"],icon:"🏄",cat:"hobbies",margin:"25-40%",marginPct:55},
+{nm:"Skateboarding",slug:"skateboarding",t:16,g:"B",p:5,bf:2,gf:2,c:4,tr:3,ao:24,comp:"low",etsy:6000,prds:["T-shirts", "Hoodies", "Decks", "Stickers"],icon:"🛹",cat:"hobbies",margin:"35-50%",marginPct:70},
+{nm:"Travel / Wanderlust",slug:"travel-wanderlust",t:16,g:"B",p:4,bf:2,gf:4,c:3,tr:3,ao:24,comp:"medium",etsy:18000,prds:["T-shirts", "Tote bags", "Stickers", "Journals"],icon:"✈️",cat:"hobbies",margin:"30-45%",marginPct:65},
+{nm:"Vintage / Thrift",slug:"vintage-thrift",t:16,g:"B",p:4,bf:3,gf:3,c:3,tr:3,ao:24,comp:"medium",etsy:12000,prds:["T-shirts", "Tote bags", "Mugs", "Prints"],icon:"🛍️",cat:"hobbies",margin:"25-40%",marginPct:55},
+{nm:"New Parents / Baby",slug:"new-parents",t:20,g:"A",p:5,bf:4,gf:5,c:3,tr:3,ao:24,comp:"medium",etsy:22000,prds:["Onesies", "T-shirts", "Tote bags", "Mugs", "Baby blankets"],icon:"👶",cat:"family",margin:"25-40%",marginPct:55},
+{nm:"Grandparents / Glamma",slug:"grandparents",t:20,g:"A",p:5,bf:3,gf:5,c:4,tr:3,ao:26,comp:"low",etsy:8500,prds:["T-shirts", "Tote bags", "Mugs", "Framed prints"],icon:"👵",cat:"family",margin:"35-50%",marginPct:70},
+{nm:"Dad Jokes / Mom Humor",slug:"parent-humor",t:18,g:"A",p:4,bf:4,gf:4,c:3,tr:3,ao:22,comp:"medium",etsy:20000,prds:["T-shirts", "Mugs", "Aprons", "Stickers"],icon:"😂",cat:"family",margin:"25-40%",marginPct:55},
+{nm:"Dark Humor",slug:"dark-humor",t:17,g:"B",p:4,bf:3,gf:3,c:3,tr:4,ao:22,comp:"medium",etsy:25000,prds:["T-shirts", "Mugs", "Stickers", "Hoodies"],icon:"💀",cat:"family",margin:"25-40%",marginPct:55},
+{nm:"Sarcastic / Snarky",slug:"sarcastic-humor",t:16,g:"B",p:4,bf:3,gf:3,c:3,tr:3,ao:20,comp:"medium",etsy:30000,prds:["T-shirts", "Mugs", "Stickers"],icon:"😏",cat:"family",margin:"25-40%",marginPct:55},
+{nm:"Meme Culture",slug:"meme-culture",t:15,g:"B",p:4,bf:3,gf:2,c:2,tr:4,ao:20,comp:"high",etsy:20000,prds:["T-shirts", "Hoodies", "Stickers", "Mugs"],icon:"😂",cat:"family",margin:"20-35%",marginPct:40},
+{nm:"Stand-Up Comedy",slug:"stand-up-comedy",t:15,g:"B",p:4,bf:2,gf:3,c:3,tr:3,ao:22,comp:"medium",etsy:5000,prds:["T-shirts", "Mugs", "Tote bags", "Stickers"],icon:"🎤",cat:"family",margin:"25-40%",marginPct:55},
+{nm:"Karaoke",slug:"karaoke",t:17,g:"B",p:4,bf:3,gf:3,c:4,tr:3,ao:20,comp:"low",etsy:2000,prds:["T-shirts", "Mugs", "Tote bags", "Microphones"],icon:"🎤",cat:"family",margin:"35-50%",marginPct:70},
+{nm:"Bride / Wedding Party",slug:"bride-wedding",t:17,g:"B",p:4,bf:2,gf:5,c:3,tr:3,ao:24,comp:"medium",etsy:35000,prds:["T-shirts", "Robes", "Mugs", "Tote bags"],icon:"👰",cat:"family",margin:"25-40%",marginPct:55},
+{nm:"Groom / Groomsmen",slug:"groom-groomsmen",t:16,g:"B",p:4,bf:2,gf:4,c:3,tr:3,ao:24,comp:"medium",etsy:20000,prds:["T-shirts", "Mugs", "Hats", "Flasks"],icon:"🤵",cat:"family",margin:"25-40%",marginPct:55},
+{nm:"Adoption Pride",slug:"adoption-pride",t:20,g:"A",p:5,bf:2,gf:5,c:5,tr:3,ao:26,comp:"very-low",etsy:1500,prds:["T-shirts", "Tote bags", "Mugs", "Prints"],icon:"❤️",cat:"family",margin:"45-60%",marginPct:85},
+{nm:"Homeschool Parents",slug:"homeschool",t:19,g:"A",p:5,bf:3,gf:4,c:4,tr:3,ao:22,comp:"medium",etsy:6000,prds:["T-shirts", "Mugs", "Tote bags", "Planners"],icon:"📚",cat:"family",margin:"35-50%",marginPct:70},
+{nm:"Special Needs Parent",slug:"special-needs-parent",t:19,g:"A",p:5,bf:2,gf:4,c:5,tr:3,ao:26,comp:"very-low",etsy:2500,prds:["T-shirts", "Tote bags", "Mugs", "Stickers"],icon:"❤️",cat:"family",margin:"45-60%",marginPct:85},
+{nm:"Twin / Multiple Birth",slug:"twins-multiples",t:19,g:"A",p:5,bf:3,gf:4,c:4,tr:3,ao:24,comp:"low",etsy:3500,prds:["Onesies", "T-shirts", "Mugs"],icon:"👶",cat:"family",margin:"35-50%",marginPct:70},
+{nm:"Foster Parent Pride",slug:"foster-parent",t:20,g:"A",p:5,bf:2,gf:5,c:5,tr:3,ao:24,comp:"very-low",etsy:800,prds:["T-shirts", "Mugs", "Tote bags"],icon:"🏠",cat:"family",margin:"45-60%",marginPct:85},
+{nm:"Modern Farmhouse",slug:"modern-farmhouse",t:17,g:"B",p:4,bf:2,gf:5,c:3,tr:3,ao:45,comp:"medium",etsy:35000,prds:["Wall art", "Throw pillows", "Doormats", "Signs", "Prints"],icon:"🏡",cat:"home",margin:"25-40%",marginPct:55},
+{nm:"Coastal / Beach House",slug:"coastal-beach",t:17,g:"B",p:4,bf:2,gf:4,c:4,tr:3,ao:35,comp:"low",etsy:8500,prds:["Wall art", "Throw pillows", "Doormats", "Mugs", "Prints"],icon:"🏖️",cat:"home",margin:"35-50%",marginPct:70},
+{nm:"Apartment Living",slug:"apartment-living",t:14,g:"B",p:3,bf:3,gf:2,c:3,tr:3,ao:22,comp:"medium",etsy:12000,prds:["T-shirts", "Mugs", "Prints", "Tote bags"],icon:"🏢",cat:"home",margin:"25-40%",marginPct:55},
+{nm:"Cabin / Lodge",slug:"cabin-lodge",t:17,g:"B",p:5,bf:2,gf:3,c:4,tr:3,ao:28,comp:"low",etsy:5000,prds:["T-shirts", "Mugs", "Hats", "Blankets"],icon:"🏕️",cat:"home",margin:"35-50%",marginPct:70},
+{nm:"Mid-Century Modern",slug:"mid-century-modern",t:15,g:"B",p:4,bf:2,gf:3,c:4,tr:2,ao:26,comp:"low",etsy:4500,prds:["Wall art", "Prints", "Mugs", "Throw pillows"],icon:"🛋️",cat:"home",margin:"35-50%",marginPct:70},
+{nm:"Boho / Bohemian",slug:"boho-bohemian",t:16,g:"B",p:4,bf:2,gf:4,c:3,tr:3,ao:24,comp:"medium",etsy:10000,prds:["Wall art", "Throw pillows", "Mugs", "Tote bags"],icon:"🌙",cat:"home",margin:"25-40%",marginPct:55},
+{nm:"Japandi / Scandinavian",slug:"japandi-scandi",t:16,g:"B",p:4,bf:2,gf:3,c:4,tr:3,ao:28,comp:"low",etsy:5000,prds:["Wall art", "Prints", "Mugs", "Throw pillows"],icon:"🏠",cat:"home",margin:"35-50%",marginPct:70},
+{nm:"Industrial / Loft",slug:"industrial-loft",t:14,g:"B",p:3,bf:2,gf:3,c:4,tr:2,ao:28,comp:"low",etsy:6000,prds:["Wall art", "Prints", "Mugs", "Signs"],icon:"🏭",cat:"home",margin:"35-50%",marginPct:70},
+{nm:"Smart Home / Tech",slug:"smart-home-tech",t:14,g:"B",p:3,bf:3,gf:2,c:3,tr:3,ao:24,comp:"medium",etsy:8000,prds:["T-shirts", "Mugs", "Mouse pads", "Stickers"],icon:"🏠",cat:"home",margin:"25-40%",marginPct:55},
+{nm:"Halloween",slug:"halloween",t:16,g:"B",p:4,bf:1,gf:3,c:4,tr:4,ao:28,comp:"medium",etsy:45000,prds:["T-shirts", "Hoodies", "Stickers", "Tote bags", "Mugs"],icon:"🎃",cat:"seasonal",margin:"25-40%",marginPct:55},
+{nm:"Christmas / Holiday",slug:"christmas-holiday",t:15,g:"B",p:3,bf:1,gf:5,c:2,tr:4,ao:26,comp:"high",etsy:65000,prds:["T-shirts", "Hoodies", "Ornaments", "Sweatshirts", "Socks"],icon:"🎄",cat:"seasonal",margin:"20-35%",marginPct:40},
+{nm:"Mother's / Father's Day",slug:"parents-day",t:15,g:"B",p:3,bf:1,gf:5,c:2,tr:4,ao:24,comp:"high",etsy:40000,prds:["T-shirts", "Mugs", "Tote bags", "Prints", "Jewelry boxes"],icon:"💐",cat:"seasonal",margin:"20-35%",marginPct:40},
+{nm:"Valentine's Day",slug:"valentines-day",t:14,g:"B",p:3,bf:1,gf:5,c:2,tr:3,ao:22,comp:"high",etsy:35000,prds:["T-shirts", "Mugs", "Tote bags", "Stickers", "Ornaments"],icon:"💝",cat:"seasonal",margin:"20-35%",marginPct:40},
+{nm:"St. Patrick's Day",slug:"st-patricks-day",t:14,g:"B",p:3,bf:1,gf:3,c:4,tr:3,ao:22,comp:"medium",etsy:12000,prds:["T-shirts", "Mugs", "Hats", "Stickers"],icon:"🍀",cat:"seasonal",margin:"35-50%",marginPct:70},
+{nm:"Easter / Spring",slug:"easter-spring",t:14,g:"B",p:3,bf:1,gf:4,c:3,tr:3,ao:22,comp:"medium",etsy:15000,prds:["T-shirts", "Mugs", "Onesies", "Baskets"],icon:"🐰",cat:"seasonal",margin:"25-40%",marginPct:55},
+{nm:"4th of July / Summer",slug:"4th-july-summer",t:15,g:"B",p:4,bf:1,gf:3,c:4,tr:3,ao:26,comp:"medium",etsy:20000,prds:["T-shirts", "Hats", "Mugs", "Tote bags"],icon:"🎆",cat:"seasonal",margin:"35-50%",marginPct:70},
+{nm:"Thanksgiving",slug:"thanksgiving",t:14,g:"B",p:3,bf:1,gf:4,c:3,tr:3,ao:24,comp:"medium",etsy:18000,prds:["T-shirts", "Mugs", "Aprons", "Tote bags"],icon:"🦃",cat:"seasonal",margin:"25-40%",marginPct:55},
+{nm:"New Year / Resolution",slug:"new-year-resolution",t:16,g:"B",p:4,bf:2,gf:3,c:3,tr:4,ao:22,comp:"medium",etsy:15000,prds:["T-shirts", "Hoodies", "Mugs", "Planners"],icon:"🎊",cat:"seasonal",margin:"25-40%",marginPct:55},
+{nm:"Graduation",slug:"graduation",t:16,g:"B",p:4,bf:1,gf:5,c:3,tr:3,ao:22,comp:"medium",etsy:25000,prds:["T-shirts", "Mugs", "Tote bags", "Prints"],icon:"🎓",cat:"seasonal",margin:"25-40%",marginPct:55},
+{nm:"AI / ML Enthusiasts",slug:"ai-ml",t:18,g:"A",p:4,bf:3,gf:2,c:5,tr:4,ao:24,comp:"low",etsy:25000,prds:["T-shirts", "Mugs", "Stickers", "Desk toys"],icon:"🤖",cat:"tech",margin:"35-50%",marginPct:70},
+{nm:"Crypto / Web3",slug:"crypto-web3",t:14,g:"B",p:4,bf:2,gf:2,c:3,tr:3,ao:24,comp:"medium",etsy:8000,prds:["T-shirts", "Hoodies", "Mugs", "Stickers"],icon:"₿",cat:"tech",margin:"25-40%",marginPct:55},
+{nm:"Bitcoin",slug:"bitcoin",t:14,g:"B",p:4,bf:2,gf:2,c:3,tr:3,ao:26,comp:"medium",etsy:6000,prds:["T-shirts", "Mugs", "Hats", "Stickers"],icon:"₿",cat:"tech",margin:"25-40%",marginPct:55},
+{nm:"Programming / Coding",slug:"programming-coding",t:16,g:"B",p:5,bf:3,gf:2,c:3,tr:3,ao:24,comp:"medium",etsy:12000,prds:["T-shirts", "Mugs", "Stickers", "Desk pads"],icon:"💻",cat:"tech",margin:"25-40%",marginPct:55},
+{nm:"Python",slug:"python",t:17,g:"B",p:5,bf:3,gf:3,c:3,tr:3,ao:24,comp:"medium",etsy:8000,prds:["T-shirts", "Mugs", "Stickers", "Hats"],icon:"🐍",cat:"tech",margin:"25-40%",marginPct:55},
+{nm:"Cybersecurity",slug:"cybersecurity",t:15,g:"B",p:4,bf:2,gf:2,c:4,tr:3,ao:26,comp:"low",etsy:5000,prds:["T-shirts", "Mugs", "Stickers", "Hats"],icon:"🔒",cat:"tech",margin:"35-50%",marginPct:70},
+{nm:"Linux / Open Source",slug:"linux-open-source",t:17,g:"B",p:5,bf:3,gf:2,c:4,tr:3,ao:24,comp:"low",etsy:6000,prds:["T-shirts", "Mugs", "Stickers", "Patches"],icon:"🐧",cat:"tech",margin:"35-50%",marginPct:70},
+{nm:"Apple / Mac",slug:"apple-mac",t:14,g:"B",p:4,bf:3,gf:2,c:2,tr:3,ao:26,comp:"high",etsy:20000,prds:["T-shirts", "Mugs", "Stickers", "Hats"],icon:"🍎",cat:"tech",margin:"20-35%",marginPct:40},
+{nm:"TikTok / Social Media",slug:"tiktok-social",t:16,g:"B",p:4,bf:3,gf:2,c:3,tr:4,ao:20,comp:"medium",etsy:5000,prds:["T-shirts", "Hoodies", "Stickers", "Pop sockets"],icon:"📱",cat:"tech",margin:"25-40%",marginPct:55},
+{nm:"Podcast / Content Creator",slug:"podcast-creator",t:16,g:"B",p:4,bf:3,gf:2,c:3,tr:4,ao:22,comp:"medium",etsy:8000,prds:["T-shirts", "Mugs", "Stickers", "Mouse pads"],icon:"🎙️",cat:"tech",margin:"25-40%",marginPct:55},
+{nm:"Powerlifting / Strongman",slug:"powerlifting",t:20,g:"A",p:5,bf:4,gf:4,c:4,tr:3,ao:28,comp:"low",etsy:4200,prds:["T-shirts", "Hoodies", "Patches", "Towels"],icon:"🏋️",cat:"sports",margin:"35-50%",marginPct:70},
+{nm:"CrossFit",slug:"crossfit",t:18,g:"A",p:5,bf:4,gf:3,c:3,tr:3,ao:26,comp:"medium",etsy:8000,prds:["T-shirts", "Tank tops", "Shorts", "Wrist wraps"],icon:"💪",cat:"sports",margin:"25-40%",marginPct:55},
+{nm:"Bodybuilding",slug:"bodybuilding",t:17,g:"B",p:5,bf:3,gf:3,c:3,tr:3,ao:28,comp:"medium",etsy:10000,prds:["T-shirts", "Tank tops", "Hoodies", "Shakers"],icon:"💪",cat:"sports",margin:"25-40%",marginPct:55},
+{nm:"Yoga Instructor",slug:"yoga-instructor",t:15,g:"B",p:4,bf:2,gf:3,c:3,tr:3,ao:24,comp:"medium",etsy:6000,prds:["T-shirts", "Tote bags", "Mugs", "Mats"],icon:"🧘",cat:"sports",margin:"25-40%",marginPct:55},
+{nm:"Personal Trainer",slug:"personal-trainer",t:15,g:"B",p:4,bf:2,gf:3,c:3,tr:3,ao:24,comp:"medium",etsy:5000,prds:["T-shirts", "Tank tops", "Shakers", "Gloves"],icon:"💪",cat:"sports",margin:"25-40%",marginPct:55},
+{nm:"Soccer / Football",slug:"soccer-football",t:16,g:"B",p:5,bf:2,gf:4,c:2,tr:3,ao:22,comp:"high",etsy:25000,prds:["T-shirts", "Jerseys", "Scarves", "Stickers"],icon:"⚽",cat:"sports",margin:"20-35%",marginPct:40},
+{nm:"Basketball",slug:"basketball",t:15,g:"B",p:5,bf:2,gf:3,c:2,tr:3,ao:24,comp:"high",etsy:20000,prds:["T-shirts", "Jerseys", "Shorts", "Socks"],icon:"🏀",cat:"sports",margin:"20-35%",marginPct:40},
+{nm:"Baseball / Softball",slug:"baseball-softball",t:17,g:"B",p:5,bf:2,gf:4,c:3,tr:3,ao:24,comp:"medium",etsy:15000,prds:["T-shirts", "Hats", "Jerseys", "Socks"],icon:"⚾",cat:"sports",margin:"25-40%",marginPct:55},
+{nm:"Hockey",slug:"hockey",t:16,g:"B",p:5,bf:2,gf:3,c:3,tr:3,ao:26,comp:"medium",etsy:12000,prds:["T-shirts", "Jerseys", "Hats", "Stickers"],icon:"🏒",cat:"sports",margin:"25-40%",marginPct:55},
+{nm:"Tennis",slug:"tennis",t:15,g:"B",p:4,bf:2,gf:3,c:3,tr:3,ao:26,comp:"medium",etsy:8000,prds:["T-shirts", "Dresses", "Visors", "Towels"],icon:"🎾",cat:"sports",margin:"25-40%",marginPct:55},
+{nm:"Boxing / MMA",slug:"boxing-mma",t:16,g:"B",p:5,bf:2,gf:3,c:3,tr:3,ao:26,comp:"medium",etsy:7000,prds:["T-shirts", "Hoodies", "Shorts", "Gloves"],icon:"🥊",cat:"sports",margin:"25-40%",marginPct:55},
+{nm:"Wrestling",slug:"wrestling",t:18,g:"A",p:5,bf:2,gf:4,c:4,tr:3,ao:24,comp:"low",etsy:3000,prds:["T-shirts", "Singlets", "Hoodies", "Stickers"],icon:"🤼",cat:"sports",margin:"35-50%",marginPct:70},
+{nm:"Skateboarding",slug:"skateboarding",t:16,g:"B",p:5,bf:2,gf:2,c:4,tr:3,ao:24,comp:"low",etsy:6000,prds:["T-shirts", "Hoodies", "Decks", "Stickers"],icon:"🛹",cat:"sports",margin:"35-50%",marginPct:70},
+{nm:"BMX",slug:"bmx",t:16,g:"B",p:5,bf:2,gf:2,c:4,tr:3,ao:24,comp:"low",etsy:3000,prds:["T-shirts", "Hoodies", "Stickers", "Hats"],icon:"🚲",cat:"sports",margin:"35-50%",marginPct:70},
+{nm:"Snowboarding / Skiing",slug:"snowboarding-skiing",t:16,g:"B",p:5,bf:2,gf:3,c:3,tr:3,ao:28,comp:"medium",etsy:6000,prds:["Hoodies", "Beanies", "Stickers", "Goggles"],icon:"⛷️",cat:"sports",margin:"25-40%",marginPct:55},
+{nm:"Cheerleading",slug:"cheerleading",t:17,g:"B",p:5,bf:2,gf:4,c:3,tr:3,ao:22,comp:"medium",etsy:5000,prds:["T-shirts", "Tote bags", "Mugs", "Hair bows"],icon:"📣",cat:"sports",margin:"25-40%",marginPct:55},
+{nm:"Dance / Ballet",slug:"dance-ballet",t:17,g:"B",p:5,bf:2,gf:4,c:3,tr:3,ao:22,comp:"medium",etsy:6000,prds:["T-shirts", "Tote bags", "Mugs", "Tutus"],icon:"💃",cat:"sports",margin:"25-40%",marginPct:55},
+{nm:"Cycling / Biking",slug:"cycling-biking",t:16,g:"B",p:5,bf:2,gf:3,c:3,tr:3,ao:26,comp:"medium",etsy:8000,prds:["T-shirts", "Jerseys", "Shorts", "Gloves"],icon:"🚴",cat:"sports",margin:"25-40%",marginPct:55},
+{nm:"Swimming",slug:"swimming",t:16,g:"B",p:4,bf:2,gf:3,c:4,tr:3,ao:24,comp:"medium",etsy:5000,prds:["T-shirts", "Tote bags", "Mugs", "Goggles"],icon:"🏊",cat:"sports",margin:"35-50%",marginPct:70},
+{nm:"Tattoo Artist",slug:"tattoo-artist",t:16,g:"B",p:5,bf:2,gf:3,c:3,tr:3,ao:26,comp:"medium",etsy:7000,prds:["T-shirts", "Mugs", "Patches", "Flash prints"],icon:"💉",cat:"culture",margin:"25-40%",marginPct:55},
+{nm:"Musician / Band",slug:"musician-band",t:16,g:"B",p:5,bf:2,gf:3,c:3,tr:3,ao:24,comp:"medium",etsy:8000,prds:["T-shirts", "Hoodies", "Stickers", "Picks"],icon:"🎵",cat:"culture",margin:"25-40%",marginPct:55},
+{nm:"DJ / Electronic Music",slug:"dj-electronic",t:15,g:"B",p:5,bf:2,gf:2,c:3,tr:3,ao:24,comp:"medium",etsy:5000,prds:["T-shirts", "Hoodies", "Stickers", "Caps"],icon:"🎧",cat:"culture",margin:"25-40%",marginPct:55},
+{nm:"Heavy Metal",slug:"heavy-metal",t:16,g:"B",p:5,bf:2,gf:3,c:3,tr:3,ao:24,comp:"medium",etsy:8000,prds:["T-shirts", "Hoodies", "Patches", "Pins"],icon:"🤘",cat:"culture",margin:"25-40%",marginPct:55},
+{nm:"Country Music",slug:"country-music",t:16,g:"B",p:5,bf:2,gf:3,c:3,tr:3,ao:24,comp:"medium",etsy:10000,prds:["T-shirts", "Hats", "Mugs", "Stickers"],icon:"🤠",cat:"culture",margin:"25-40%",marginPct:55},
+{nm:"Hip Hop / Rap",slug:"hip-hop-rap",t:15,g:"B",p:5,bf:2,gf:3,c:2,tr:3,ao:24,comp:"high",etsy:20000,prds:["T-shirts", "Hoodies", "Hats", "Stickers"],icon:"🎤",cat:"culture",margin:"20-35%",marginPct:40},
+{nm:"Indie / Alternative",slug:"indie-alternative",t:16,g:"B",p:5,bf:2,gf:3,c:3,tr:3,ao:22,comp:"medium",etsy:7000,prds:["T-shirts", "Hoodies", "Stickers", "Tote bags"],icon:"🎵",cat:"culture",margin:"25-40%",marginPct:55},
+{nm:"Punk / Emo",slug:"punk-emo",t:15,g:"B",p:5,bf:2,gf:2,c:3,tr:3,ao:22,comp:"medium",etsy:6000,prds:["T-shirts", "Hoodies", "Patches", "Pins"],icon:"🎸",cat:"culture",margin:"25-40%",marginPct:55},
+{nm:"Actor / Theater",slug:"actor-theater",t:16,g:"B",p:5,bf:2,gf:3,c:3,tr:3,ao:24,comp:"medium",etsy:6000,prds:["T-shirts", "Mugs", "Tote bags", "Playbills"],icon:"🎭",cat:"culture",margin:"25-40%",marginPct:55},
+{nm:"Comedy / Improv",slug:"comedy-improv",t:15,g:"B",p:4,bf:2,gf:3,c:3,tr:3,ao:22,comp:"medium",etsy:5000,prds:["T-shirts", "Mugs", "Stickers", "Mics"],icon:"🎤",cat:"culture",margin:"25-40%",marginPct:55},
+{nm:"Skulls / Gothic",slug:"skulls-gothic",t:15,g:"B",p:5,bf:2,gf:2,c:3,tr:3,ao:24,comp:"medium",etsy:8000,prds:["T-shirts", "Hoodies", "Stickers", "Patches"],icon:"💀",cat:"culture",margin:"25-40%",marginPct:55},
+{nm:"Alien / UFO",slug:"alien-ufo",t:15,g:"B",p:4,bf:2,gf:2,c:4,tr:3,ao:22,comp:"low",etsy:2500,prds:["T-shirts", "Mugs", "Stickers", "Hats"],icon:"🛸",cat:"culture",margin:"35-50%",marginPct:70},
+{nm:"Conspiracy / Truth",slug:"conspiracy-truth",t:14,g:"B",p:4,bf:2,gf:2,c:3,tr:3,ao:22,comp:"medium",etsy:4000,prds:["T-shirts", "Mugs", "Stickers", "Hats"],icon:"🔍",cat:"culture",margin:"25-40%",marginPct:55},
+{nm:"Comic Books / Collecting",slug:"comic-books",t:16,g:"B",p:5,bf:2,gf:3,c:3,tr:3,ao:24,comp:"medium",etsy:7000,prds:["T-shirts", "Hoodies", "Mugs", "Bags"],icon:"📰",cat:"culture",margin:"25-40%",marginPct:55},
+{nm:"Day Trader / Stocks",slug:"day-trader",t:14,g:"B",p:4,bf:2,gf:2,c:3,tr:3,ao:24,comp:"medium",etsy:5000,prds:["T-shirts", "Mugs", "Hats", "Mouse pads"],icon:"📈",cat:"culture",margin:"25-40%",marginPct:55},
+{nm:"Life Coach / Motivational",slug:"life-coach",t:15,g:"B",p:4,bf:2,gf:3,c:3,tr:3,ao:24,comp:"medium",etsy:4000,prds:["T-shirts", "Mugs", "Journals", "Stickers"],icon:"💪",cat:"culture",margin:"25-40%",marginPct:55},
+{nm:"Bingo / Casino",slug:"bingo-casino",t:16,g:"B",p:4,bf:2,gf:3,c:4,tr:3,ao:22,comp:"low",etsy:3500,prds:["T-shirts", "Mugs", "Hats", "Chips"],icon:"🎰",cat:"culture",margin:"35-50%",marginPct:70},
+{nm:"Genealogy / Family History",slug:"genealogy-family-history",t:16,g:"B",p:4,bf:2,gf:3,c:5,tr:2,ao:24,comp:"low",etsy:2000,prds:["T-shirts", "Mugs", "Books", "Prints"],icon:"🌳",cat:"culture",margin:"35-50%",marginPct:70},
+{nm:"Comic Con / Fan Convention",slug:"comic-con-fan-con",t:16,g:"B",p:5,bf:2,gf:3,c:3,tr:3,ao:26,comp:"medium",etsy:8000,prds:["T-shirts", "Hoodies", "Pins", "Lanyards"],icon:"🦸",cat:"culture",margin:"25-40%",marginPct:55},
+{nm:"Nurse Life / Medical Humor",slug:"medical-humor",t:19,g:"A",p:5,bf:4,gf:4,c:3,tr:3,ao:22,comp:"medium",etsy:35000,prds:["T-shirts", "Mugs", "Tote bags", "Scrubs"],icon:"🩺",cat:"culture",margin:"25-40%",marginPct:55},
+{nm:"Therapist / Counselor",slug:"therapist-counselor",t:17,g:"B",p:5,bf:2,gf:3,c:4,tr:3,ao:24,comp:"low",etsy:4000,prds:["T-shirts", "Mugs", "Tote bags", "Journals"],icon:"💚",cat:"culture",margin:"35-50%",marginPct:70},
+{nm:"Social Worker",slug:"social-worker",t:17,g:"B",p:5,bf:2,gf:3,c:4,tr:3,ao:22,comp:"low",etsy:3000,prds:["T-shirts", "Mugs", "Tote bags"],icon:"🤝",cat:"culture",margin:"35-50%",marginPct:70},
+{nm:"Librarian",slug:"librarian",t:17,g:"B",p:5,bf:2,gf:3,c:4,tr:3,ao:22,comp:"low",etsy:3500,prds:["T-shirts", "Tote bags", "Mugs", "Bookmarks"],icon:"📚",cat:"culture",margin:"35-50%",marginPct:70}];
+
+const CATS={all:"All Niches",pets:"🐾 Pets",professions:"💼 Professions",fitness:"💪 Fitness",lifestyle:"✨ Lifestyle",hobbies:"🎲 Hobbies",family:"👨‍👩‍👧 Family",culture:"🎭 Culture & Humor",home:"🏠 Home",tech:"💻 Tech",seasonal:"🎃 Seasonal"};
+const catOrder=["all","pets","professions","fitness","lifestyle","hobbies","family","culture","home","tech","seasonal"];
+
+// Build category buttons
+const catsEl=document.getElementById('cats');
+catOrder.forEach(c=>{
+const btn=document.createElement('div');
+btn.className='cat'+(c==='all'?' active':'');
+btn.dataset.c=c;
+btn.textContent=CATS[c];
+catsEl.appendChild(btn);
+});
+
+let activeCat='all';
+let activeNiche=null;
+
+function renderList(){
+const term=document.getElementById('search').value.toLowerCase();
+let filtered=NICHES.filter(n=>{
+const matchTerm=!term||n.nm.toLowerCase().includes(term)||n.slug.includes(term);
+const matchCat=activeCat==='all'||n.cat===activeCat;
+return matchTerm&&matchCat;
+});
+filtered.sort((a,b)=>b.t-a.t);
+const list=document.getElementById('nicheList');
+if(!filtered.length){list.innerHTML='<div style="padding:1rem;color:var(--dim);text-align:center">No niches found</div>';return}
+list.innerHTML=filtered.map(n=>`
+<div class="niche-item ${activeNiche===n.slug?'active':''}" onclick="selectNiche('${n.slug}')">
+<div class="niche-icon">${n.icon}</div>
+<div class="niche-info">
+<div class="niche-name">${n.nm}</div>
+<div class="niche-meta">AOV $${n.ao} · ${n.comp} comp.</div>
+</div>
+<div class="niche-score score-${n.g}">${n.t}</div>
+</div>`).join('');
+}
+
+function selectNiche(slug){
+activeNiche=slug;
+const n=NICHES.find(x=>x.slug===slug);if(!n)return;
+renderList();
+const d=document.getElementById('detailPanel');
+const gradeColors={S:'var(--green)',A:'var(--accent2)',B:'var(--yellow)',C:'var(--orange)',D:'var(--red)'};
+d.innerHTML=`
+<div class="detail-top">
+<div>
+<div class="detail-title">${n.icon} ${n.nm}</div>
+<div class="detail-subtitle">${CATS[n.cat]||'General'} · ${n.etsy.toLocaleString()} Etsy results · AOV $${n.ao}</div>
+<div class="detail-badge">${n.comp.toUpperCase()} COMPETITION</div>
+</div>
+<div class="detail-grade" style="background:${gradeColors[n.g]}22;color:${gradeColors[n.g]}">${n.g}-Grade<br><span style="font-size:.8rem;font-weight:400">Score ${n.t}/25</span></div>
+</div>
+
+<div class="scores-grid">
+<div class="score-card"><div class="bar-visual"><div class="bar-inner passion" style="height:${n.p*20}%"></div></div><div class="val" style="color:${n.p>=4?'var(--green)':n.p>=3?'var(--yellow)':'var(--orange)'}">${n.p}/5</div><div class="lbl">Passion</div></div>
+<div class="score-card"><div class="bar-visual"><div class="bar-inner buy" style="height:${n.bf*20}%"></div></div><div class="val" style="color:${n.bf>=4?'var(--green)':n.bf>=3?'var(--yellow)':'var(--orange)'}">${n.bf}/5</div><div class="lbl">Buy Freq</div></div>
+<div class="score-card"><div class="bar-visual"><div class="bar-inner gift" style="height:${n.gf*20}%"></div></div><div class="val" style="color:${n.gf>=4?'var(--green)':n.gf>=3?'var(--yellow)':'var(--orange)'}">${n.gf}/5</div><div class="lbl">Gift Pot.</div></div>
+<div class="score-card"><div class="bar-visual"><div class="bar-inner comp" style="height:${n.c*20}%"></div></div><div class="val" style="color:${n.c>=4?'var(--green)':n.c>=3?'var(--yellow)':'var(--orange)'}">${n.c}/5</div><div class="lbl">Low Comp.</div></div>
+<div class="score-card"><div class="bar-visual"><div class="bar-inner trend" style="height:${n.tr*20}%"></div></div><div class="val" style="color:${n.tr>=4?'var(--green)':n.tr>=3?'var(--yellow)':'var(--orange)'}">${n.tr}/5</div><div class="lbl">Trend</div></div>
+</div>
+
+<div class="detail-grid">
+<div class="detail-box"><h4>💰 Profit Estimate</h4><div class="big">$${n.ao}<span class="unit"> avg order</span></div><div class="profit-bar"><div class="profit-fill" style="width:${n.marginPct}%"></div></div><p style="margin-top:.5rem">Est. margin: <strong>${n.margin}</strong></p></div>
+<div class="detail-box"><h4>📦 Best Products</h4><p>${n.prds.join(' · ')}</p></div>
+<div class="detail-box" style="grid-column:1/-1"><h4>🎨 Design Strategy</h4><p>${n.design}</p></div>
+</div>
+
+<div class="detail-box" style="margin-bottom:1.5rem"><h4>📝 Key Notes</h4><ul>${n.notes.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+
+<div class="detail-box" style="margin-bottom:1.5rem"><h4>🎯 Sub-Niche Formula</h4>
+<p><strong>Too broad:</strong> "${n.nm}" (${n.etsy.toLocaleString()} results)<br>
+<strong>Better:</strong> Go one level deeper (2K-5K results)<br>
+<strong>Best:</strong> Pair with identity: "Pickleball Dad" or "ER Nurse ADHD Mom"</p></div>
+
+${n.roadmap?`<div class="section-title">🗺️ 90-Day Launch Roadmap</div>
+<div class="roadmap-timeline">
+${n.roadmap.map((r,i)=>`
+<div class="roadmap-phase">
+<div class="roadmap-dot" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff">${i+1}</div>
+<div class="roadmap-content">
+<h5>${r.phase} <span style="color:var(--dim);font-weight:400">Days ${r.days}</span></h5>
+<p>${r.action}</p>
+<p style="color:var(--accent2);margin-top:.25rem">✓ ${r.deliverable}</p>
+</div>
+</div>`).join('')}
+</div>`:''}
+
+<div class="cta-buttons" style="margin-top:2rem">
+<a href="#" class="cta-btn cta-primary" onclick="alert('This niche + 79 more with full roadmaps in Pro Bundle ($39)')">Get Full Roadmap — Pro $39</a>
+<a href="#" class="cta-btn cta-secondary" onclick="navigator.clipboard.writeText('${n.slug}');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy Slug',1500)">Copy Slug</a>
+</div>
+`;
+d.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+document.getElementById('search').addEventListener('input',renderList);
+document.getElementById('cats').addEventListener('click',e=>{
+if(e.target.classList.contains('cat')){
+document.querySelectorAll('.cat').forEach(b=>b.classList.remove('active'));
+e.target.classList.add('active');
+activeCat=e.target.dataset.c;
+renderList();
+}});
+renderList();
+</script>
+</body>
+</html>
